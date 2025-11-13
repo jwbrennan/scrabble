@@ -1,9 +1,6 @@
-BeginPackage["Scrabbology`ScrabbleHelper`"];
-formatWord;
-ScrabbleHelper;
-ScrabbleBingo;
+BeginPackage["Scrabbology`PackageScope`", {"Scrabbology`"}]
 
-Begin["`Private`"]
+Begin["`ScrabbleHelper`Private`"]
 
 formatWord[word_String, letter_String] := 
 Module[
@@ -16,7 +13,7 @@ Module[
 	]
 ]
 
-ScrabbleHelper[rack_String , dict_List] := 
+ScrabbleHelper[rack_String /; StringLength[rack] == 7, dict_List] := 
 Module[
 	{
 		tiles = Sort[Characters[rack]],
@@ -50,7 +47,7 @@ Module[
 	]
 ]
 
-ScrabbleBingo[rack_String, dict_List] := 
+ScrabbleBingo[rack_String /; StringLength[rack] == 7, dict_List] := 
 Module[
 	{sevens, sortedCharSevens, bingoPositions, letters, possibleRacks, blankPos}, 
 	sevens = Select[dict, StringLength[#] == 7 &];

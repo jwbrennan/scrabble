@@ -1,24 +1,6 @@
-BeginPackage["Scrabbology`Scrabblegorithm`", {"ScrabbleBoard`"}]
+BeginPackage["Scrabbology`PackageScope`", {"Scrabbology`"}]
 
-tiles;
-UpdateUsedTileCount;
-UpdateRemainingTileCount;
-UpdateScrabbleBoard;
-FindStartingSquares;
-FindPossibleOverlapPositions;
-ForbiddenSquares;
-UpdateForbiddenSquares;
-Battleship;
-IdentifyBlanks;
-FormatWordWithBlanks;
-BlanksAllowed;
-RunScrabblegorithm;
-GameToEpilog;
-PerfectScrabbleGameQ;
-
-(*https://www.reddit.com/r/scrabble/comments/my5tie/the_419_words_erased_from_csw/*)
-
-Begin["`Private`"]
+Begin["`Scrabblegorithm`Private`"]
 
 tiles = 
 <|
@@ -74,7 +56,6 @@ Module[
 	]
 ]
 
-(* Create the Epilog of a 'word' played in a position 'pos' in the following 'direction'. *)
 UpdateScrabbleBoard[word_String, pos_List, direction_String : ("Right" | "Down"), epilogState_List] :=
 Module[
 	{x, y, length, epilog},
@@ -121,12 +102,6 @@ Module[
 	]
 ]
 
-(* 
-   Takes the current Master Association, the word to be played, and the possible options for the overlap tile,
-   and finds an association in the form:
-   <| "Down" -> <| "OverlapTileOption" -> {pos1, pos2, ...} |>, "Right" -> <|...|> |>
-   Then returns a list of valid 'overlap vectors' subject to board constraints.
-*)
 FindPossibleOverlapPositions[assoc_Association, word_String, overlapTileOptions_List] :=
 Module[
 	{overlapAssoc = <|"Down" -> <||>, "Right" -> <||>|>, overlapVectors, overlapSquaresAssoc},
@@ -324,7 +299,6 @@ Module[
 	Return[b]
 ]
 
-(* Algorithmically generates valid bingos and displays them on the Scrabble board to be chosen by the user. *)
 RunScrabblegorithm[] :=
 Module[
 {

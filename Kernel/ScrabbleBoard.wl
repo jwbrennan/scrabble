@@ -1,9 +1,7 @@
-BeginPackage["Scrabbology`ScrabbleBoard`"];
-CreateInitialScrabbleBoard;
+BeginPackage["Scrabbology`PackageScope`", {"Scrabbology`"}]
 
-Begin["`Private`"]
+Begin["`ScrabbleBoard`Private`"]
 
-(* Create Graphic of an Empty Scrabble Board. *)
 CreateInitialScrabbleBoard[] := 
 Module[
 	{board, colors},

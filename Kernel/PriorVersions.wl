@@ -1,10 +1,8 @@
-BeginPackage["Scrabbology`PriorVersions`", {"Scrabblegorithm`", "ScrabbleBoard`"}]
-RunVersion1Scrabblegorithm;
-VisualizeVersion1;
-RunVersion2Scrabblegorithm;
-Begin["`Private`"]
+BeginPackage["Scrabbology`PackageScope`", {"Scrabbology`"}]
 
-RunVersion1Scrabblegorithm[iterations_Integer] := 
+Begin["`PriorVersions`Private`"]
+
+RunVersion1Scrabblegorithm[iterations_] := 
 Module[
 	{
 		j = 1, dict, wordsByLength, remainingCounts, bingos, blanks,
