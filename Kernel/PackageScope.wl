@@ -8,7 +8,6 @@ formatWord;
 tiles;
 UpdateUsedTileCount;
 UpdateRemainingTileCount;
-FindStartingSquares;
 FindPossibleOverlapPositions;
 ForbiddenSquares;
 UpdateForbiddenSquares;

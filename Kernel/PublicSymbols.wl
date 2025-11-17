@@ -24,6 +24,9 @@ GU`SetUsage[RunVersion2Scrabblegorithm,
 	"Iteratively find 14 bingos made of 98 of the 100 tiles in a standard English Scrabble game. 
 	These bingos can be 8-letters due to overlaps with previous bingos."
 ];
+GU`SetUsage[FindStartingSquares,
+	" Finds list of starting positions of a new bingo."
+];
 GU`SetUsage[FindPossibleOverlapPositions,
 	"Takes the current Master Association, the word to be played, and the possible options for the overlap tile, 
 	and finds an association in the form:

@@ -45,15 +45,17 @@ Module[
 					Length[bingos] == 14, 
 					Print["Success!"];
 					CloudPut[
-						Append[CloudGet["V.1-WordMaster"], 
-						<|
-							"Bingos" -> bingos, 
-							"Blanks" -> blanks, 
-							"Tiles Remaining" -> Flatten[KeyValueMap[Table[#1, #2] &, remainingCounts]]
-						|>
-						], 
-						"V.1-WordMaster"
-					]
+						Append[
+							CloudGet[URL["https://www.wolframcloud.com/env/josephb/Scrabble/V.1-WordMaster"]], 
+							<|
+								"Bingos" -> bingos, 
+								"Blanks" -> blanks, 
+								"Tiles Remaining" -> Flatten[KeyValueMap[Table[#1, #2] &, remainingCounts]]
+							|>
+						],
+						URL["https://www.wolframcloud.com/env/josephb/Scrabble/V.1-WordMaster"]
+					];
+					Break[];
 				];
 				If[
 					Length[bingos] == 12, 
@@ -98,7 +100,7 @@ Module[
 	Show[board, ImageSize -> 400, Epilog -> epilog]
 ]
 
-RunVersion2Scrabblegorithm[iterations_Integer] :=
+RunVersion2Scrabblegorithm[iterations_] :=
 Module[
 	{
 		j, dict, wordsByLength, remainingCounts, usedCounts, bingos, blanks, overlaps, blankTileList, usedWords, i, 
@@ -171,19 +173,19 @@ Module[
 				Print["Bingos: ",bingos];
 				Print["Tiles Left: ", Length[Flatten[KeyValueMap[Table[#1, #2] &, remainingCounts]]], " ", StringJoin[Flatten[KeyValueMap[Table[#1, #2] &, remainingCounts]]]];
 				Print["Tiles Used: ", Length[Flatten[KeyValueMap[Table[#1, #2] &, usedCounts]]], " ", StringJoin[Flatten[KeyValueMap[Table[#1, #2] &, usedCounts]]]];
-				usedWords[word] = True;(* Mark the word as used *)
+				usedWords[word] = True; (* Mark the word as used *)
 				If[
 					Length[bingos] == 14,
 					Print["Success!"];
 					CloudPut[
 						Append[
-							CloudGet["V.2-WordMaster"],
+							CloudGet[URL["https://www.wolframcloud.com/env/josephb/Scrabble/V.2-WordMaster"]],
 							<|
 								"Bingos" -> bingos, "Overlaps" -> overlaps, "Blanks" -> blanks,
 								"Tiles Remaining" -> Flatten[KeyValueMap[Table[#1, #2] &, remainingCounts]]
 							|>
 						],
-						"V.2-WordMaster"
+						URL["https://www.wolframcloud.com/env/josephb/Scrabble/V.2-WordMaster"]
 					];
 					Break[];
 				];
