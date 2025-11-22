@@ -1,5 +1,3 @@
-import { CENTER } from './tiles';
-
 export type Placement = {
 	word: string;
 	row: number;
@@ -22,17 +20,4 @@ export const placeWord = (
 		}
 	}
 	return newBoard;
-};
-
-export const getOpeningPlacement = (
-	word: string,
-	direction: string
-): { row: number; col: number; direction: string } | null => {
-	const len = word.length;
-	if (len !== 7) return null;
-	const start = CENTER - 3; // 7-letter word is always 3 left/right of centre
-	if (direction === 'H') {
-		return { row: CENTER, col: start, direction: 'H' };
-	}
-	return { row: start, col: CENTER, direction: 'V' };
 };
