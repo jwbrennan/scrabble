@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import sevenletterbingos from './assets/SevenLetterBingos.txt?raw';
 import Board from './components/Board';
 import OpeningBingoSelector from './components/OpeningBingoSelector';
 import ClearBoard from './components/ClearBoard';
-import { BOARD_SIZE } from './lib/tiles';
+import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/tiles';
 import type { Move } from './lib/types';
+
 // Formats: gcg https://www.poslfit.com/scrabble/gcg/
+
 const SEVENS = sevenletterbingos
 	.trim()
 	.split('\n')
@@ -19,11 +21,24 @@ export default function App() {
 			.map(() => Array(BOARD_SIZE).fill(''))
 	);
 
+	const [tileBag, setTileBag] =
+		useState<Record<string, number>>(INITIAL_TILEBAG);
+
 	const [isPlacingOpening, setIsPlacingOpening] = useState(false);
 
 	const [startSquareHandler, setStartSquareHandler] = useState<
 		((r: number, c: number) => void) | null
 	>(null);
+
+	const handleStartSquareSelected = useCallback(
+		(handler: (r: number, c: number) => void): (() => void) => {
+			setStartSquareHandler(() => handler);
+			return () => {
+				setStartSquareHandler(null);
+			};
+		},
+		[]
+	);
 
 	const handleBoardClick = (r: number, c: number) => {
 		startSquareHandler?.(r, c);
@@ -31,15 +46,18 @@ export default function App() {
 
 	const [moves, setMoves] = useState<Move[]>([]);
 
+	useEffect(() => {
+		if (moves.length === 0) return;
+
+		const last = moves[moves.length - 1];
+
+		console.log(JSON.stringify(last, null, 2));
+	}, [moves]);
+
 	return (
 		<div className="min-h-screen bg-gray-50 py-8 px-4">
 			<div className="bg-white p-8 rounded-lg shadow-2xl mx-auto text-center">
-				<h1 className="text-5xl md:text-7xl font-extrabold text-green-900 mb-10 tracking-wider">
-					Perfect Scrabble Games
-				</h1>
-
 				<div className="flex justify-center gap-12 items-start w-full">
-					{/* BOARD WRAPPER */}
 					<div className="flex flex-col items-center">
 						<div className="bg-green-900 p-8 rounded-lg shadow-2xl">
 							<Board
@@ -47,8 +65,6 @@ export default function App() {
 								onTileClick={handleBoardClick}
 							/>
 						</div>
-
-						{/* BUTTONS CENTERED UNDER BOARD */}
 						<div className="mt-12 flex flex-col items-center space-y-8">
 							{!isPlacingOpening ? (
 								<button
@@ -56,12 +72,12 @@ export default function App() {
 									className="px-20 py-8 bg-red-600 hover:bg-red-700 text-white text-4xl 
                                font-bold rounded-full shadow-2xl transform hover:scale-105 transition"
 								>
-									Start
+									Random Word
 								</button>
 							) : (
 								<OpeningBingoSelector
 									sevenLetterWords={SEVENS}
-									onPlace={(
+									onPlace={async (
 										newBoard,
 										word,
 										row,
@@ -79,14 +95,59 @@ export default function App() {
 												score: 0,
 											},
 										]);
+										try {
+											const testParams =
+												new URLSearchParams({
+													word: word.toUpperCase(),
+												});
+
+											const testAPIResponse = await fetch(
+												`https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/TEST?${testParams}`
+											);
+											if (!testAPIResponse.ok)
+												throw new Error(
+													'API returned error'
+												);
+											const testResult =
+												await testAPIResponse.json();
+											console.log(testResult);
+										} catch (err) {
+											console.error('API Failure', err);
+										}
+										try {
+											const tileBagParams =
+												new URLSearchParams({
+													word: word.toUpperCase(),
+													tileBag:
+														JSON.stringify(tileBag),
+												});
+
+											const updateTileBagResponse =
+												await fetch(
+													`https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/UpdateTileBag?${tileBagParams}`
+												);
+											if (!updateTileBagResponse.ok)
+												throw new Error(
+													'API returned error'
+												);
+											const updateTileBagResult =
+												await updateTileBagResponse.json();
+											console.log(updateTileBagResult);
+										} catch (err) {
+											console.error(
+												'Failed to update tilebag from API:',
+												err
+											);
+											alert(
+												'Warning: Could not update tile bag (check console)'
+											);
+										}
 										setIsPlacingOpening(false);
 									}}
 									onCancel={() => setIsPlacingOpening(false)}
-									onStartSquareSelected={(handler) => {
-										setStartSquareHandler(() => handler);
-										return () =>
-											setStartSquareHandler(null);
-									}}
+									onStartSquareSelected={
+										handleStartSquareSelected
+									}
 								/>
 							)}
 
@@ -103,6 +164,9 @@ export default function App() {
 									setIsPlacingOpening(false);
 								}}
 							/>
+							<footer className="mt-20 text-gray-600 text-sm">
+								Perfect Scrabble Games • Joseph Brennan 2025
+							</footer>
 						</div>
 					</div>
 
@@ -136,10 +200,6 @@ export default function App() {
 						</ul>
 					</div>
 				</div>
-
-				<footer className="mt-20 text-gray-600 text-sm">
-					Perfect Scrabble Games • Joseph Brennan 2025
-				</footer>
 			</div>
 		</div>
 	);

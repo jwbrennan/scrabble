@@ -1,0 +1,485 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     21109,        477]
+NotebookOptionsPosition[     18270,        417]
+NotebookOutlinePosition[     18794,        436]
+CellTagsIndexPosition[     18751,        433]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["UpdateTileCount", "Section",
+ CellChangeTimes->{{3.973170911977268*^9, 
+  3.9731709155785656`*^9}},ExpressionUUID->"560790de-500c-664f-a849-\
+b7703b65a776"],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "UpdateTileBag", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"UpdateTileBag", "[", 
+   RowBox[{"tileBag_List", ",", "word_String"}], "]"}], ":=", 
+  "\[IndentingNewLine]", 
+  RowBox[{"Module", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"{", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"tilesInWord", "=", 
+       RowBox[{"Characters", "[", "word", "]"}]}], ",", "\[IndentingNewLine]", 
+      RowBox[{"tileBagAssoc", "=", 
+       RowBox[{"Association", "[", "tileBag", "]"}]}], ",", 
+      "\[IndentingNewLine]", "charCounts", ",", "\[IndentingNewLine]", 
+      "newTileBag", ",", "\[IndentingNewLine]", "blanksNeeded"}], 
+     "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"charCounts", "=", 
+      RowBox[{"Counts", "[", 
+       RowBox[{"Characters", "[", "word", "]"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"newTileBag", "=", 
+      RowBox[{"Merge", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"tileBagAssoc", ",", 
+          RowBox[{"Map", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"#", "->", 
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{"tileBagAssoc", "[", "#", "]"}], "-", 
+                 RowBox[{"charCounts", "[", "#", "]"}]}], ")"}]}], ")"}], 
+             "&"}], ",", "tilesInWord"}], "]"}]}], "}"}], ",", "Last"}], 
+       "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"Return", "[", 
+      RowBox[{"Normal", "[", "newTileBag", "]"}], "]"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}]}], "Input",
+ CellChangeTimes->{{3.9729266788044357`*^9, 3.9729267698736877`*^9}, {
+  3.9729268655221767`*^9, 3.972926871761282*^9}, {3.9731676054794464`*^9, 
+  3.9731676124053802`*^9}, {3.973188774604805*^9, 3.9731888026327095`*^9}, {
+  3.9731889106164455`*^9, 3.973188952278839*^9}, {3.973189870078457*^9, 
+  3.9731898729421253`*^9}},
+ CellLabel->"In[59]:=",ExpressionUUID->"3eed3772-49c1-0a4d-93ea-3c2aca35c08a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CloudDeploy", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"APIFunction", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"\"\<tileBag\>\"", "->", "\"\<String\>\""}], ",", 
+       RowBox[{"\"\<word\>\"", "->", "\"\<String\>\""}]}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"UpdateTileBag", "[", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"ImportString", "[", 
+         RowBox[{
+          RowBox[{"URLDecode", "[", "#tileBag", "]"}], ",", "\"\<JSON\>\""}], 
+         "]"}], ",", "\[IndentingNewLine]", "#word"}], "\[IndentingNewLine]", 
+       "]"}], "&"}], ",", "\[IndentingNewLine]", "\"\<JSON\>\""}], 
+    "\[IndentingNewLine]", "]"}], ",", 
+   "\[IndentingNewLine]", "\"\<Scrabble/APIs/UpdateTileBag\>\"", ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Permissions", "\[Rule]", "\"\<Public\>\""}]}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.972926775127598*^9, 3.9729267772803497`*^9}, {
+  3.9729268943454094`*^9, 3.972926897415167*^9}, {3.9729271104490814`*^9, 
+  3.9729271135452366`*^9}, {3.972927169102791*^9, 3.972927169959938*^9}, {
+  3.972927476849848*^9, 3.972927508823702*^9}, {3.972927556248358*^9, 
+  3.972927563187174*^9}, {3.973165714513769*^9, 3.973165717463011*^9}, {
+  3.9731657519058933`*^9, 3.973165782706394*^9}, {3.973167185292572*^9, 
+  3.97316718676972*^9}, {3.97316761625198*^9, 3.9731676187082214`*^9}, {
+  3.9731888078607273`*^9, 3.9731888282912426`*^9}, {3.9731892077465534`*^9, 
+  3.973189268504627*^9}, {3.973189523760809*^9, 3.973189533934246*^9}},
+ CellLabel->"In[61]:=",ExpressionUUID->"e68c18bc-bbf2-4649-a133-3617cb0db155"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"CloudObject", "[", 
+   TemplateBox[{
+    "\"https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/UpdateTileBag\"\
+", "https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/UpdateTileBag"},
+    "HyperlinkURL"], "]"}],
+  CloudObject[
+  "https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/UpdateTileBag"],
+  SelectWithContents->True]], "Output",
+ CellChangeTimes->{
+  3.97292717140818*^9, {3.9729274851739063`*^9, 3.972927510492918*^9}, 
+   3.9729275639426517`*^9, {3.9731657610646133`*^9, 3.973165783878275*^9}, 
+   3.973167188815155*^9, 3.9731676210689545`*^9, {3.973188814238695*^9, 
+   3.97318882997279*^9}, 3.9731889717885723`*^9, 3.97318927238476*^9, 
+   3.9731895734891186`*^9, 3.973189875756056*^9},
+ CellLabel->"Out[61]=",ExpressionUUID->"b796431f-0a2b-a54f-a760-b20f1111763f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"URLDecode", 
+  "[", "\"\<%7B%22A%22%3A5%2C%22B%22%3A4%2C%22C%22%3A2%7D\>\"", 
+  "]"}]], "Input",
+ CellLabel->"In[62]:=",ExpressionUUID->"858fc89b-1f69-c344-9741-18196bdaad21"],
+
+Cell[BoxData["\<\"{\\\"A\\\":5,\\\"B\\\":4,\\\"C\\\":2}\"\>"], "Output",
+ CellChangeTimes->{3.9731898476189632`*^9, 3.9731898778982086`*^9},
+ CellLabel->"Out[62]=",ExpressionUUID->"c756a75c-a24a-6342-9c48-ede6dc5b6a18"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"UpdateTileBag", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"ImportString", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+     "URLDecode", "[", "\"\<%7B%22A%22%3A5%2C%22B%22%3A4%2C%22C%22%3A2%7D\>\"",
+       "]"}], ",", "\[IndentingNewLine]", "\"\<JSON\>\""}], 
+    "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", "\"\<CAB\>\""}],
+   "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.9731888705027122`*^9, 3.9731888993213177`*^9}, {
+  3.973189291561289*^9, 3.9731893303423424`*^9}, {3.9731898321515503`*^9, 
+  3.973189840941969*^9}},
+ CellLabel->"In[63]:=",ExpressionUUID->"7f729a7c-e4da-5849-b927-ea6892574280"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"\<\"A\"\>", "\[Rule]", "4"}], ",", 
+   RowBox[{"\<\"B\"\>", "\[Rule]", "3"}], ",", 
+   RowBox[{"\<\"C\"\>", "\[Rule]", "1"}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.9731888996655903`*^9, 3.97318895571381*^9, {3.9731893151968613`*^9, 
+   3.97318933081979*^9}, 3.9731898416329174`*^9, 3.9731898793326206`*^9},
+ CellLabel->"Out[63]=",ExpressionUUID->"3b4e433f-166e-c94f-b08a-a2be07df6878"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"URLExecute", "[", "\[IndentingNewLine]", 
+  RowBox[{"\"\<https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/\
+UpdateTileBag\>\"", ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"\"\<tileBag\>\"", 
+      "->", "\"\<%7B%22A%22%3A5%2C%22B%22%3A4%2C%22C%22%3A2%7D\>\""}], ",", 
+     RowBox[{"\"\<word\>\"", "->", "\"\<CAB\>\""}]}], "}"}]}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.972927362838114*^9, 3.9729274147022285`*^9}, {
+   3.972927520359873*^9, 3.9729275205630035`*^9}, 3.972927578170849*^9, {
+   3.973167625433874*^9, 3.973167654052685*^9}, {3.9731888528658085`*^9, 
+   3.973188862967039*^9}, {3.9731893401747913`*^9, 3.9731893660986366`*^9}, {
+   3.973189810886099*^9, 3.9731898147657948`*^9}},
+ CellLabel->"In[64]:=",ExpressionUUID->"5e3c200e-c607-bf43-af04-6d3447858088"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"\<\"A\"\>", "\[Rule]", "4"}], ",", 
+   RowBox[{"\<\"B\"\>", "\[Rule]", "3"}], ",", 
+   RowBox[{"\<\"C\"\>", "\[Rule]", "1"}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.9729274184652348`*^9, 3.972927522339142*^9, 3.972927580248337*^9, {
+   3.9731676285452633`*^9, 3.9731676562378464`*^9}, {3.973188960802313*^9, 
+   3.973188975301674*^9}, {3.973189336104561*^9, 3.9731893673197784`*^9}, 
+   3.9731898177968464`*^9, {3.973189856430456*^9, 3.9731898815319004`*^9}},
+ CellLabel->"Out[64]=",ExpressionUUID->"1c10719c-28fc-5d44-b625-826d344cb04d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"URLExecute", 
+  "[", "\"\<https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/\
+UpdateTileBag?word=ROWDIER&tilebag=%7B%22A%22%3A9%2C%22B%22%3A2%2C%22C%22%3A2%\
+2C%22D%22%3A4%2C%22E%22%3A12%2C%22F%22%3A2%2C%22G%22%3A3%2C%22H%22%3A2%2C%22I%\
+22%3A9%2C%22J%22%3A1%2C%22K%22%3A1%2C%22L%22%3A4%2C%22M%22%3A2%2C%22N%22%3A6%\
+2C%22O%22%3A8%2C%22P%22%3A2%2C%22Q%22%3A1%2C%22R%22%3A6%2C%22S%22%3A4%2C%22T%\
+22%3A6%2C%22U%22%3A4%2C%22V%22%3A2%2C%22W%22%3A2%2C%22X%22%3A1%2C%22Y%22%3A2%\
+2C%22Z%22%3A1%2C%22%3F%22%3A2%7D\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.9731899862843933`*^9, 3.9731899960139275`*^9}},
+ CellLabel->"In[66]:=",ExpressionUUID->"23ed67c7-e5fb-fc4c-a84a-c483607cf881"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"\<\"Success\"\>", "\[Rule]", "False"}], ",", 
+   RowBox[{"\<\"Failure\"\>", 
+    "\[Rule]", "\<\"The API could not be evaluated because there is no input \
+for fields: \\\"tileBag\\\".\"\>"}], ",", 
+   RowBox[{"\<\"Fields\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"\<\"tileBag\"\>", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"\<\"AllowedExtensions\"\>", "\[Rule]", 
+          RowBox[{"{", "\<\"json\"\>", "}"}]}], ",", 
+         RowBox[{"\<\"AutoSubmitting\"\>", "\[Rule]", "False"}], ",", 
+         RowBox[{"\<\"CodeLanguage\"\>", "\[Rule]", "\<\"Automatic\"\>"}], ",", 
+         RowBox[{"\<\"Default\"\>", "\[Rule]", "Null"}], ",", 
+         RowBox[{"\<\"Enabled\"\>", "\[Rule]", "True"}], ",", 
+         RowBox[{"\<\"Failure\"\>", 
+          "\[Rule]", "\<\"This field is required.\"\>"}], ",", 
+         RowBox[{"\<\"Help\"\>", "\[Rule]", "Null"}], ",", 
+         RowBox[{"\<\"Hidden\"\>", "\[Rule]", "False"}], ",", 
+         RowBox[{"\<\"Hint\"\>", "\[Rule]", "Null"}], ",", 
+         RowBox[{"\<\"Input\"\>", "\[Rule]", "Null"}], ",", 
+         RowBox[{"\<\"Interpreter\"\>", "\[Rule]", "\<\"String\"\>"}], ",", 
+         RowBox[{"\<\"Label\"\>", "\[Rule]", "\<\"tileBag\"\>"}], ",", 
+         RowBox[{"\<\"Required\"\>", "\[Rule]", "True"}], ",", 
+         RowBox[{"\<\"Type\"\>", "\[Rule]", "\<\"Element\"\>"}]}], "}"}]}], ",", 
+      RowBox[{"\<\"word\"\>", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"\<\"AllowedExtensions\"\>", "\[Rule]", 
+          RowBox[{"{", "\<\"json\"\>", "}"}]}], ",", 
+         RowBox[{"\<\"AutoSubmitting\"\>", "\[Rule]", "False"}], ",", 
+         RowBox[{"\<\"CodeLanguage\"\>", "\[Rule]", "\<\"Automatic\"\>"}], ",", 
+         RowBox[{"\<\"Default\"\>", "\[Rule]", "Null"}], ",", 
+         RowBox[{"\<\"Enabled\"\>", "\[Rule]", "True"}], ",", 
+         RowBox[{"\<\"Failure\"\>", "\[Rule]", "Null"}], ",", 
+         RowBox[{"\<\"Help\"\>", "\[Rule]", "Null"}], ",", 
+         RowBox[{"\<\"Hidden\"\>", "\[Rule]", "False"}], ",", 
+         RowBox[{"\<\"Hint\"\>", "\[Rule]", "Null"}], ",", 
+         RowBox[{"\<\"Input\"\>", "\[Rule]", "\<\"ROWDIER\"\>"}], ",", 
+         RowBox[{"\<\"Interpreter\"\>", "\[Rule]", "\<\"String\"\>"}], ",", 
+         RowBox[{"\<\"Label\"\>", "\[Rule]", "\<\"word\"\>"}], ",", 
+         RowBox[{"\<\"Required\"\>", "\[Rule]", "True"}], ",", 
+         RowBox[{"\<\"Type\"\>", "\[Rule]", "\<\"Element\"\>"}]}], "}"}]}]}], 
+     "}"}]}]}], "}"}]], "Output",
+ CellChangeTimes->{3.973189998220564*^9},
+ CellLabel->"Out[66]=",ExpressionUUID->"1b4f7da4-5f1d-9b4c-8f8e-99dfcade6467"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"URLExecute", 
+  "[", "\"\<https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/\
+UpdateTileBag?word=HUMPIER&tileBag=%7B%22A%22%3A9%2C%22B%22%3A2%2C%22C%22%3A2%\
+2C%22D%22%3A4%2C%22E%22%3A12%2C%22F%22%3A2%2C%22G%22%3A3%2C%22H%22%3A2%2C%22I%\
+22%3A9%2C%22J%22%3A1%2C%22K%22%3A1%2C%22L%22%3A4%2C%22M%22%3A2%2C%22N%22%3A6%\
+2C%22O%22%3A8%2C%22P%22%3A2%2C%22Q%22%3A1%2C%22R%22%3A6%2C%22S%22%3A4%2C%22T%\
+22%3A6%2C%22U%22%3A4%2C%22V%22%3A2%2C%22W%22%3A2%2C%22X%22%3A1%2C%22Y%22%3A2%\
+2C%22Z%22%3A1%2C%22%3F%22%3A2%7D\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.9731899862843933`*^9, 3.9731899960139275`*^9}, {
+  3.9731900880775204`*^9, 3.973190100247801*^9}},
+ CellLabel->"In[68]:=",ExpressionUUID->"a306fb23-f08d-7343-8afc-16d44028c178"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"\<\"A\"\>", "\[Rule]", "9"}], ",", 
+   RowBox[{"\<\"B\"\>", "\[Rule]", "2"}], ",", 
+   RowBox[{"\<\"C\"\>", "\[Rule]", "2"}], ",", 
+   RowBox[{"\<\"D\"\>", "\[Rule]", "4"}], ",", 
+   RowBox[{"\<\"E\"\>", "\[Rule]", "11"}], ",", 
+   RowBox[{"\<\"F\"\>", "\[Rule]", "2"}], ",", 
+   RowBox[{"\<\"G\"\>", "\[Rule]", "3"}], ",", 
+   RowBox[{"\<\"H\"\>", "\[Rule]", "1"}], ",", 
+   RowBox[{"\<\"I\"\>", "\[Rule]", "8"}], ",", 
+   RowBox[{"\<\"J\"\>", "\[Rule]", "1"}], ",", 
+   RowBox[{"\<\"K\"\>", "\[Rule]", "1"}], ",", 
+   RowBox[{"\<\"L\"\>", "\[Rule]", "4"}], ",", 
+   RowBox[{"\<\"M\"\>", "\[Rule]", "1"}], ",", 
+   RowBox[{"\<\"N\"\>", "\[Rule]", "6"}], ",", 
+   RowBox[{"\<\"O\"\>", "\[Rule]", "8"}], ",", 
+   RowBox[{"\<\"P\"\>", "\[Rule]", "1"}], ",", 
+   RowBox[{"\<\"Q\"\>", "\[Rule]", "1"}], ",", 
+   RowBox[{"\<\"R\"\>", "\[Rule]", "5"}], ",", 
+   RowBox[{"\<\"S\"\>", "\[Rule]", "4"}], ",", 
+   RowBox[{"\<\"T\"\>", "\[Rule]", "6"}], ",", 
+   RowBox[{"\<\"U\"\>", "\[Rule]", "3"}], ",", 
+   RowBox[{"\<\"V\"\>", "\[Rule]", "2"}], ",", 
+   RowBox[{"\<\"W\"\>", "\[Rule]", "2"}], ",", 
+   RowBox[{"\<\"X\"\>", "\[Rule]", "1"}], ",", 
+   RowBox[{"\<\"Y\"\>", "\[Rule]", "2"}], ",", 
+   RowBox[{"\<\"Z\"\>", "\[Rule]", "1"}], ",", 
+   RowBox[{"\<\"?\"\>", "\[Rule]", "2"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.9731900929458504`*^9, 3.973190103168108*^9}},
+ CellLabel->"Out[68]=",ExpressionUUID->"86ca1bd3-01b2-0942-a829-7519b842469d"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Test API", "Section",
+ CellChangeTimes->{{3.9731709190028343`*^9, 
+  3.9731709203778152`*^9}},ExpressionUUID->"3313bc4e-d5a7-8440-85c8-\
+9733951d96fc"],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "test", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"test", "[", "word_String", "]"}], ":=", 
+  RowBox[{"StringReverse", "[", "word", "]"}]}]}], "Input",
+ CellChangeTimes->{{3.9729266788044357`*^9, 3.9729267698736877`*^9}, {
+  3.9729268655221767`*^9, 3.972926871761282*^9}, {3.9731676054794464`*^9, 
+  3.9731676124053802`*^9}, {3.973170932508339*^9, 3.9731709541702824`*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"117fa2e5-388c-e147-810d-2108d16be108"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CloudDeploy", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"APIFunction", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\"\<word\>\"", "->", "\"\<String\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"test", "[", "#word", "]"}], "&"}], ",", 
+     "\[IndentingNewLine]", "\"\<JSON\>\""}], "\[IndentingNewLine]", "]"}], ",",
+    "\[IndentingNewLine]", "\"\<Scrabble/APIs/TEST\>\"", ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Permissions", "\[Rule]", "\"\<Public\>\""}]}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.972926775127598*^9, 3.9729267772803497`*^9}, {
+  3.9729268943454094`*^9, 3.972926897415167*^9}, {3.9729271104490814`*^9, 
+  3.9729271135452366`*^9}, {3.972927169102791*^9, 3.972927169959938*^9}, {
+  3.972927476849848*^9, 3.972927508823702*^9}, {3.972927556248358*^9, 
+  3.972927563187174*^9}, {3.973165714513769*^9, 3.973165717463011*^9}, {
+  3.9731657519058933`*^9, 3.973165782706394*^9}, {3.973167185292572*^9, 
+  3.97316718676972*^9}, {3.97316761625198*^9, 3.9731676187082214`*^9}, {
+  3.973170958245941*^9, 3.9731709749217987`*^9}},
+ CellLabel->"In[3]:=",ExpressionUUID->"229c251a-1dd7-be43-9221-da11282d2cf0"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"CloudObject", "[", 
+   TemplateBox[{
+    "\"https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/TEST\"", 
+     "https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/TEST"},
+    "HyperlinkURL"], "]"}],
+  CloudObject["https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/TEST"],
+  SelectWithContents->True]], "Output",
+ CellChangeTimes->{
+  3.97292717140818*^9, {3.9729274851739063`*^9, 3.972927510492918*^9}, 
+   3.9729275639426517`*^9, {3.9731657610646133`*^9, 3.973165783878275*^9}, 
+   3.973167188815155*^9, 3.9731676210689545`*^9, 3.973170979970783*^9},
+ CellLabel->"Out[3]=",ExpressionUUID->"170e1c06-6e44-9248-83c5-034049ca994d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CloudConnect", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.9731712501684055`*^9, 3.973171252774214*^9}},
+ CellLabel->"In[5]:=",ExpressionUUID->"18a406ef-9812-7647-a8b9-41b2488354b1"],
+
+Cell[BoxData["\<\"josephb@wolfram.com\"\>"], "Output",
+ CellChangeTimes->{3.973171253199463*^9},
+ CellLabel->"Out[5]=",ExpressionUUID->"8ab58787-b4f5-044c-973e-a27f9bd61721"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"URLExecute", "[", "\[IndentingNewLine]", 
+  RowBox[{"\"\<https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/TEST\>\"\
+", ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{"\"\<word\>\"", "->", "\"\<HELLO\>\""}], "}"}]}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.972927362838114*^9, 3.9729274147022285`*^9}, {
+   3.972927520359873*^9, 3.9729275205630035`*^9}, 3.972927578170849*^9, {
+   3.973167625433874*^9, 3.973167654052685*^9}, {3.9731709836955204`*^9, 
+   3.9731709908138103`*^9}, 3.973171257391266*^9},
+ CellLabel->"In[6]:=",ExpressionUUID->"9ac2cd05-0011-c845-9f70-295451f0f514"],
+
+Cell[BoxData["\<\"OLLEH\"\>"], "Output",
+ CellChangeTimes->{
+  3.9729274184652348`*^9, 3.972927522339142*^9, 3.972927580248337*^9, {
+   3.9731676285452633`*^9, 3.9731676562378464`*^9}, 3.9731709960778255`*^9, 
+   3.973171258553194*^9},
+ CellLabel->"Out[6]=",ExpressionUUID->"4850db06-5c44-9b4a-8b51-d44d5e738fcc"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{849.75, 543.75},
+WindowMargins->{{-1254.75, Automatic}, {2.25, Automatic}},
+TaggingRules-><|
+ "ChatNotebookSettings" -> <|
+   "Model" -> <|"Service" -> "LLMKit", "Name" -> Automatic|>|>|>,
+FrontEndVersion->"14.3 for Microsoft Windows (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"9a8a35a9-b018-4547-872a-0b6a398207ae"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 162, 3, 66, "Section",ExpressionUUID->"560790de-500c-664f-a849-b7703b65a776"],
+Cell[741, 27, 2041, 46, 294, "Input",ExpressionUUID->"3eed3772-49c1-0a4d-93ea-3c2aca35c08a"],
+Cell[CellGroupData[{
+Cell[2807, 77, 1695, 32, 237, "Input",ExpressionUUID->"e68c18bc-bbf2-4649-a133-3617cb0db155"],
+Cell[4505, 111, 835, 16, 33, "Output",ExpressionUUID->"b796431f-0a2b-a54f-a760-b20f1111763f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5377, 132, 199, 4, 28, "Input",ExpressionUUID->"858fc89b-1f69-c344-9741-18196bdaad21"],
+Cell[5579, 138, 219, 2, 32, "Output",ExpressionUUID->"c756a75c-a24a-6342-9c48-ede6dc5b6a18"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5835, 145, 676, 13, 142, "Input",ExpressionUUID->"7f729a7c-e4da-5849-b927-ea6892574280"],
+Cell[6514, 160, 443, 9, 32, "Output",ExpressionUUID->"3b4e433f-166e-c94f-b08a-a2be07df6878"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6994, 174, 857, 15, 85, "Input",ExpressionUUID->"5e3c200e-c607-bf43-af04-6d3447858088"],
+Cell[7854, 191, 595, 11, 32, "Output",ExpressionUUID->"1c10719c-28fc-5d44-b625-826d344cb04d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8486, 207, 708, 10, 123, "Input",ExpressionUUID->"23ed67c7-e5fb-fc4c-a84a-c483607cf881"],
+Cell[9197, 219, 2668, 49, 165, "Output",ExpressionUUID->"1b4f7da4-5f1d-9b4c-8f8e-99dfcade6467"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11902, 273, 759, 11, 123, "Input",ExpressionUUID->"a306fb23-f08d-7343-8afc-16d44028c178"],
+Cell[12664, 286, 1497, 31, 51, "Output",ExpressionUUID->"86ca1bd3-01b2-0942-a829-7519b842469d"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14210, 323, 157, 3, 66, "Section",ExpressionUUID->"3313bc4e-d5a7-8440-85c8-9733951d96fc"],
+Cell[14370, 328, 498, 8, 47, "Input",ExpressionUUID->"117fa2e5-388c-e147-810d-2108d16be108"],
+Cell[CellGroupData[{
+Cell[14893, 340, 1242, 23, 180, "Input",ExpressionUUID->"229c251a-1dd7-be43-9221-da11282d2cf0"],
+Cell[16138, 365, 686, 13, 33, "Output",ExpressionUUID->"170e1c06-6e44-9248-83c5-034049ca994d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16861, 383, 206, 3, 28, "Input",ExpressionUUID->"18a406ef-9812-7647-a8b9-41b2488354b1"],
+Cell[17070, 388, 174, 2, 32, "Output",ExpressionUUID->"8ab58787-b4f5-044c-973e-a27f9bd61721"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17281, 395, 645, 11, 85, "Input",ExpressionUUID->"9ac2cd05-0011-c845-9f70-295451f0f514"],
+Cell[17929, 408, 313, 5, 32, "Output",ExpressionUUID->"4850db06-5c44-9b4a-8b51-d44d5e738fcc"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

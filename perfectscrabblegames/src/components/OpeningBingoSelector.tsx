@@ -1,4 +1,4 @@
-// src/components/OpeningBingoSelector.tsx
+// Prompts user to click a starting square and select direction for opening bingo
 import { useState, useEffect } from 'react';
 import { CENTER, LETTER_POINTS } from '../lib/tiles';
 import { placeWord } from '../lib/utils';
@@ -36,23 +36,16 @@ export default function OpeningBingoSelector({
 	useEffect(() => {
 		if (!word) return;
 
-		let cleanup: (() => void) | undefined;
-
 		const handler = (row: number, col: number) => {
 			setStartRow(row);
 			setStartCol(col);
 		};
-
-		// Delay registration so parent cannot call synchronously
-		const id = setTimeout(() => {
-			cleanup = onStartSquareSelected(handler) || undefined;
-		}, 0);
+		const cleanup = onStartSquareSelected(handler);
 
 		return () => {
-			clearTimeout(id);
 			cleanup?.();
 		};
-	}, [onStartSquareSelected, word]);
+	}, [word, onStartSquareSelected]);
 
 	const tryPlace = (direction: string) => {
 		if (startRow === null || startCol === null) return;
