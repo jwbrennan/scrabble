@@ -5,6 +5,7 @@ import OpeningBingoSelector from './components/OpeningBingoSelector';
 import ClearBoard from './components/ClearBoard';
 import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/setup';
 import { styleWithBlanks } from './lib/styleWithBlanks';
+import { updateTileBag } from './lib/api/updateTileBag';
 import type { Turn } from './lib/utils';
 
 // Formats: gcg https://www.poslfit.com/scrabble/gcg/
@@ -102,26 +103,11 @@ export default function App() {
 											console.error('API Failure!', err);
 										}
 										try {
-											const tileBagParams =
-												new URLSearchParams({
-													word: word.toUpperCase(),
-													tileBag:
-														JSON.stringify(tileBag),
-													blanks: '2',
-												});
-											const updateTileBagResponse =
-												await fetch(
-													`https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/UpdateTileBag?${tileBagParams}`
-												);
 											const updateTileBagResult =
-												await updateTileBagResponse.json();
-
-											if (!updateTileBagResult.success) {
-												alert(
-													updateTileBagResult.error
+												await updateTileBag(
+													word,
+													tileBag
 												);
-												return;
-											}
 											console.log(updateTileBagResult);
 											const styleWithBlanksResult =
 												styleWithBlanks(
@@ -134,7 +120,7 @@ export default function App() {
 												);
 											if (!styleWithBlanksResult) {
 												alert(
-													'Something went wrong placing blanks'
+													'Error in blank styling!'
 												);
 												return;
 											}
