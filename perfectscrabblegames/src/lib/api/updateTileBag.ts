@@ -10,10 +10,11 @@ export async function updateTileBag(
 	word: string,
 	currentTileBag: TileBag
 ): Promise<UpdateTileBagResponse> {
+	const remainingBlanks = String(currentTileBag['?'] ?? 0);
 	const params = new URLSearchParams({
 		word: word.toUpperCase(),
 		tileBag: JSON.stringify(currentTileBag),
-		blanks: '2',
+		blanks: remainingBlanks,
 	});
 
 	const response = await fetch(

@@ -4,10 +4,6 @@ export type PlaceBingoResult = {
 	blanksUsed: number;
 };
 
-/**
- * Takes a clean board (with uppercase letters already placed)
- * and the API result, and returns a new board where blanks are shown as "?"
- */
 export function styleWithBlanks(
 	board: string[][],
 	word: string,

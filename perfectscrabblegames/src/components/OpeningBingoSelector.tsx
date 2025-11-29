@@ -98,7 +98,7 @@ export default function OpeningBingoSelector({
 						className="relative w-24 h-24 bg-amber-100 border-4 border-amber-600 rounded-lg shadow-xl flex items-center justify-center"
 					>
 						<span className="text-7xl font-bold">{l}</span>
-						<span className="absolute bottom-2 right-2 text-sm font-bold text-amber-800">
+						<span className="absolute bottom-2 right-2 text-sm font-bold">
 							{LETTER_POINTS[l]}
 						</span>
 					</div>
