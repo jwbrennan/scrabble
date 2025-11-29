@@ -3,8 +3,9 @@ import sevenletterbingos from './assets/SevenLetterBingos.txt?raw';
 import Board from './components/Board';
 import OpeningBingoSelector from './components/OpeningBingoSelector';
 import ClearBoard from './components/ClearBoard';
-import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/tiles';
-import type { Move } from './lib/types';
+import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/setup';
+import { styleWithBlanks } from './lib/styleWithBlanks';
+import type { Turn } from './lib/utils';
 
 // Formats: gcg https://www.poslfit.com/scrabble/gcg/
 
@@ -44,15 +45,15 @@ export default function App() {
 		startSquareHandler?.(r, c);
 	};
 
-	const [moves, setMoves] = useState<Move[]>([]);
+	const [turns, setTurns] = useState<Turn[]>([]);
 
 	useEffect(() => {
-		if (moves.length === 0) return;
+		if (turns.length === 0) return;
 
-		const last = moves[moves.length - 1];
+		const last = turns[turns.length - 1];
 
 		console.log(JSON.stringify(last, null, 2));
-	}, [moves]);
+	}, [turns]);
 
 	return (
 		<div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -84,35 +85,21 @@ export default function App() {
 										col,
 										direction
 									) => {
-										setBoard(newBoard);
-										setMoves((prev) => [
-											...prev,
-											{
-												word,
-												row,
-												col,
-												direction,
-												score: 0,
-											},
-										]);
 										try {
 											const testParams =
 												new URLSearchParams({
 													word: word.toUpperCase(),
 												});
-
 											const testAPIResponse = await fetch(
 												`https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/TEST?${testParams}`
 											);
 											if (!testAPIResponse.ok)
-												throw new Error(
-													'API returned error'
-												);
+												throw new Error('API Failure!');
 											const testResult =
 												await testAPIResponse.json();
 											console.log(testResult);
 										} catch (err) {
-											console.error('API Failure', err);
+											console.error('API Failure!', err);
 										}
 										try {
 											const tileBagParams =
@@ -120,28 +107,61 @@ export default function App() {
 													word: word.toUpperCase(),
 													tileBag:
 														JSON.stringify(tileBag),
+													blanks: '2',
 												});
-
 											const updateTileBagResponse =
 												await fetch(
 													`https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/UpdateTileBag?${tileBagParams}`
 												);
-											if (!updateTileBagResponse.ok)
-												throw new Error(
-													'API returned error'
-												);
 											const updateTileBagResult =
 												await updateTileBagResponse.json();
+
+											if (!updateTileBagResult.success) {
+												alert(
+													updateTileBagResult.error
+												);
+												return;
+											}
 											console.log(updateTileBagResult);
+											const styleWithBlanksResult =
+												styleWithBlanks(
+													newBoard,
+													word,
+													row,
+													col,
+													direction,
+													updateTileBagResult
+												);
+											if (!styleWithBlanksResult) {
+												alert(
+													'Something went wrong placing blanks'
+												);
+												return;
+											}
+											setTileBag(
+												updateTileBagResult.tileBag
+											);
+											setBoard(
+												styleWithBlanksResult.board
+											);
+											setTurns((t) => [
+												...t,
+												{
+													word,
+													row,
+													col,
+													direction,
+													score: 0,
+													blanksUsed:
+														styleWithBlanksResult.blanksUsed,
+												},
+											]);
 										} catch (err) {
-											console.error(
-												'Failed to update tilebag from API:',
-												err
-											);
-											alert(
-												'Warning: Could not update tile bag (check console)'
-											);
+											console.error(err);
+											alert('API Failure!');
+											return;
 										}
+
 										setIsPlacingOpening(false);
 									}}
 									onCancel={() => setIsPlacingOpening(false)}
@@ -160,7 +180,7 @@ export default function App() {
 												Array(BOARD_SIZE).fill('')
 											)
 									);
-									setMoves([]);
+									setTurns([]);
 									setIsPlacingOpening(false);
 								}}
 							/>
@@ -173,15 +193,15 @@ export default function App() {
 					{/* SIDEBAR */}
 					<div className="w-72 bg-white rounded-xl shadow-xl p-4 text-left">
 						<h2 className="text-xl font-bold mb-4 text-green-900">
-							Moves
+							Turns
 						</h2>
 
-						{moves.length === 0 && (
-							<p className="text-gray-500">No moves yet</p>
+						{turns.length === 0 && (
+							<p className="text-gray-500">No Turns</p>
 						)}
 
 						<ul className="space-y-2">
-							{moves.map((m, i) => (
+							{turns.map((m, i) => (
 								<li
 									key={i}
 									className="p-3 border rounded-lg shadow-sm bg-gray-50"

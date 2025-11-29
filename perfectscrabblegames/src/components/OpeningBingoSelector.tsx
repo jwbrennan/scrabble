@@ -1,6 +1,6 @@
 // Prompts user to click a starting square and select direction for opening bingo
 import { useState, useEffect } from 'react';
-import { CENTER, LETTER_POINTS } from '../lib/tiles';
+import { CENTER, LETTER_POINTS } from '../lib/setup';
 import { placeWord } from '../lib/utils';
 
 interface Props {
@@ -80,6 +80,7 @@ export default function OpeningBingoSelector({
 			row: startRow,
 			col: startCol,
 			direction: direction as 'H' | 'V',
+			score: 0,
 		});
 
 		onPlace(newBoard, word, startRow, startCol, direction as 'H' | 'V');

@@ -1,16 +1,15 @@
-export type Placement = {
+export interface Turn {
 	word: string;
 	row: number;
 	col: number;
-	direction: string;
-};
+	direction: 'H' | 'V';
+	score: number;
+}
 
-export const placeWord = (
-	board: string[][],
-	placement: Placement
-): string[][] => {
+export const placeWord = (board: string[][], turn: Turn): string[][] => {
 	const newBoard = board.map((row) => [...row]);
-	const { word, row, col, direction } = placement;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const { word, row, col, direction, score } = turn;
 
 	for (let i = 0; i < word.length; i++) {
 		if (direction === 'H') {

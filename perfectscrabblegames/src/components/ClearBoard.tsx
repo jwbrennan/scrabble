@@ -1,3 +1,4 @@
+// A button component to clear the Scrabble board
 interface Props {
 	onClear: () => void;
 }
