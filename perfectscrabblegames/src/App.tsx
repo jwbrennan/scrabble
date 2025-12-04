@@ -10,8 +10,6 @@ import { styleWithBlanks } from './lib/styleWithBlanks';
 import { updateTileBag } from './lib/api/updateTileBag';
 import type { Turn } from './lib/utils';
 
-// Formats: gcg https://www.poslfit.com/scrabble/gcg/
-
 const SEVENS = sevenletterbingos
 	.trim()
 	.split('\n')
@@ -81,6 +79,7 @@ export default function App() {
 							{isFirstTurnDone ? (
 								<SubsequentBingoSelector
 									eightLetterWords={EIGHTS}
+									previousTurns={turns}
 								/>
 							) : (
 								<>
