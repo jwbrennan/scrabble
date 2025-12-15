@@ -3,7 +3,7 @@ import sevenletterbingos from './assets/SevenLetterBingos.txt?raw';
 import eightletterbingos from './assets/EightLetterBingos.txt?raw';
 import Board from './components/Board';
 import OpeningBingoSelector from './components/OpeningBingoSelector';
-import SubsequentBingoSelector from './components/SubsequentTurnSelector';
+import SubsequentTurnSelector from './components/SubsequentTurnSelector';
 import ClearBoard from './components/ClearBoard';
 import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/setup';
 import { styleWithBlanks } from './lib/styleWithBlanks';
@@ -77,9 +77,12 @@ export default function App() {
 						</div>
 						<div className="mt-12 flex flex-col items-center space-y-8">
 							{isFirstTurnDone ? (
-								<SubsequentBingoSelector
+								<SubsequentTurnSelector
 									eightLetterWords={EIGHTS}
 									turns={turns}
+									board={board}
+									setBoard={setBoard}
+									setTurns={setTurns}
 								/>
 							) : (
 								<>
