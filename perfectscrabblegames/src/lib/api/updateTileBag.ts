@@ -1,4 +1,4 @@
-// Calls Wolfram Cloud endpoint to validate a word and get the new tile bag.
+// Calls Wolfram Cloud endpoint to validate a bingo and get the new tile bag.
 export type TileBag = Record<string, number>;
 
 export interface UpdateTileBagResponse {
@@ -7,12 +7,12 @@ export interface UpdateTileBagResponse {
 }
 
 export async function updateTileBag(
-	word: string,
+	bingo: string,
 	currentTileBag: TileBag
 ): Promise<UpdateTileBagResponse> {
 	const remainingBlanks = String(currentTileBag['?'] ?? 0);
 	const params = new URLSearchParams({
-		word: word.toUpperCase(),
+		bingo: bingo.toUpperCase(),
 		tileBag: JSON.stringify(currentTileBag),
 		blanks: remainingBlanks,
 	});

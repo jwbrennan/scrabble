@@ -7,7 +7,7 @@ interface Props {
 	sevenLetterWords: string[];
 	onPlace: (
 		newBoard: string[][],
-		word: string,
+		bingo: string,
 		row: number,
 		col: number,
 		direction: 'H' | 'V'
@@ -25,7 +25,7 @@ export default function OpeningBingoSelector({
 	onCancel,
 	onStartSquareSelected,
 }: Props) {
-	const [word, setWord] = useState<string>(() => {
+	const [openingBingo, setOpeningBingo] = useState<string>(() => {
 		return sevenLetterWords[
 			Math.floor(Math.random() * sevenLetterWords.length)
 		];
@@ -34,7 +34,7 @@ export default function OpeningBingoSelector({
 	const [startCol, setStartCol] = useState<number | null>(null);
 
 	useEffect(() => {
-		if (!word) return;
+		if (!openingBingo) return;
 
 		const handler = (row: number, col: number) => {
 			setStartRow(row);
@@ -45,7 +45,7 @@ export default function OpeningBingoSelector({
 		return () => {
 			cleanup?.();
 		};
-	}, [word, onStartSquareSelected]);
+	}, [openingBingo, onStartSquareSelected]);
 
 	const tryPlace = (direction: string) => {
 		if (startRow === null || startCol === null) return;
@@ -76,23 +76,30 @@ export default function OpeningBingoSelector({
 			.fill(null)
 			.map(() => Array(15).fill(''));
 		const newBoard = placeWord(emptyBoard, {
-			word,
+			bingo: openingBingo,
 			row: startRow,
 			col: startCol,
 			direction: direction as 'H' | 'V',
 			score: 0,
 		});
 
-		onPlace(newBoard, word, startRow, startCol, direction as 'H' | 'V');
+		onPlace(
+			newBoard,
+			openingBingo,
+			startRow,
+			startCol,
+			direction as 'H' | 'V'
+		);
 	};
 	return (
 		<div className="bg-white rounded-2xl shadow-2xl p-8 mt-12 max-w-4xl mx-auto space-y-8">
 			<h2 className="text-5xl font-bold text-green-900 text-center">
-				Opening Bingo: <span className="text-red-600">{word}</span>
+				Opening Bingo:{' '}
+				<span className="text-red-600">{openingBingo}</span>
 			</h2>
 
 			<div className="flex justify-center gap-5">
-				{word.split('').map((l, i) => (
+				{openingBingo.split('').map((l, i) => (
 					<div
 						key={i}
 						className="relative w-24 h-24 bg-amber-100 border-4 border-amber-600 rounded-lg shadow-xl flex items-center justify-center"
@@ -145,7 +152,7 @@ export default function OpeningBingoSelector({
 						// reset the selected start square when choosing a new word
 						// so the UI requires the user to click again
 						(() => {
-							setWord(
+							setOpeningBingo(
 								sevenLetterWords[
 									Math.floor(
 										Math.random() * sevenLetterWords.length
@@ -158,7 +165,7 @@ export default function OpeningBingoSelector({
 					}
 					className="px-10 py-4 bg-orange-600 hover:bg-orange-700 text-white text-2xl rounded-full"
 				>
-					New Word
+					New Bingo
 				</button>
 				<button
 					onClick={onCancel}

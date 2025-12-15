@@ -6,7 +6,7 @@ export type PlaceBingoResult = {
 
 export function styleWithBlanks(
 	board: string[][],
-	word: string,
+	bingo: string,
 	row: number,
 	col: number,
 	direction: 'H' | 'V',
@@ -14,7 +14,7 @@ export function styleWithBlanks(
 ): PlaceBingoResult | null {
 	if (!apiResult.success) return null;
 
-	const letters = word.toUpperCase().split('');
+	const letters = bingo.toUpperCase().split('');
 	const newBoard = board.map((r) => [...r]);
 
 	// 1. Find how many blanks were used for each letter

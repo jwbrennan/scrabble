@@ -2,70 +2,51 @@
 import { useState } from 'react';
 import { LETTER_POINTS } from '../lib/setup';
 import type { Turn } from '../lib/utils';
+import { findViablePlays } from '../lib/api/findViablePlays';
 
 interface Props {
 	eightLetterWords: string[];
-	previousTurns: Turn[];
+	turns: Turn[];
 	onCancel?: () => void;
 }
 
 export default function SubsequentBingoSelector({
 	eightLetterWords,
-	previousTurns,
+	turns,
 	onCancel,
 }: Props) {
-	const [word, setWord] = useState<string>(
+	const [bingo, setBingo] = useState<string>(
 		() =>
 			eightLetterWords[
 				Math.floor(Math.random() * eightLetterWords.length)
 			]
 	);
-	const drawNewWord = () => {
-		setWord(
+	const drawNewBingo = () => {
+		setBingo(
 			eightLetterWords[
 				Math.floor(Math.random() * eightLetterWords.length)
 			]
 		);
 	};
 
-	const checkOverlap = async () => {
-		const params = new URLSearchParams();
-		params.append('word', word);
-		params.append('previousTurns', JSON.stringify(previousTurns));
+	const findPlays = async () => {
 		try {
-			const response = await fetch(
-				`https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/OverlapsQ?${params.toString()}`,
-				{
-					method: 'GET',
-				}
-			);
-
-			if (!response.ok) {
-				throw new Error('API request failed');
-			}
-
-			const data = await response.json();
-			console.log(data);
-			alert(
-				data.success
-					? 'Possible overlaps exist!'
-					: 'No possible overlaps'
-			);
-			// You can expand this to trigger placement logic if success is true
+			const result = await findViablePlays(bingo, turns);
+			console.log('FindViablePlays API response:', result);
 		} catch (error) {
-			console.error('Error calling API:', error);
-			alert('Failed to check overlaps');
+			console.error('Error calling FindViablePlays API:', error);
+			alert('Failed to find viable plays');
 		}
 	};
 
 	return (
 		<div className="bg-white rounded-2xl shadow-2xl p-10 mt-12 max-w-5xl mx-auto space-y-10">
 			<h2 className="text-5xl font-bold text-green-900 text-center">
-				Next Bingo: <span className="text-red-600">{word}</span>
+				Next Bingo: <span className="text-red-600">{bingo}</span>
 			</h2>
 
 			<div className="flex justify-center gap-4 flex-wrap">
-				{word.split('').map((letter, i) => (
+				{bingo.split('').map((letter, i) => (
 					<div
 						key={i}
 						className="relative w-20 h-20 bg-amber-100 border-4 border-amber-600 rounded-lg shadow-xl 
@@ -83,18 +64,18 @@ export default function SubsequentBingoSelector({
 
 			<div className="flex justify-center gap-12">
 				<button
-					onClick={drawNewWord}
+					onClick={drawNewBingo}
 					className="px-12 py-5 bg-orange-600 hover:bg-orange-700 text-white text-3xl font-bold rounded-full shadow-xl 
                      transform hover:scale-105 transition"
 				>
-					New Word
+					New Bingo
 				</button>
 				<button
-					onClick={checkOverlap}
+					onClick={findPlays}
 					className="px-12 py-5 bg-blue-600 hover:bg-blue-700 text-white text-3xl font-bold rounded-full shadow-xl 
-                     transform hover:scale-105 transition"
+                   transform hover:scale-105 transition"
 				>
-					Check Overlap
+					Find Viable Plays
 				</button>
 
 				{onCancel && (

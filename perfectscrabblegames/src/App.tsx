@@ -79,7 +79,7 @@ export default function App() {
 							{isFirstTurnDone ? (
 								<SubsequentBingoSelector
 									eightLetterWords={EIGHTS}
-									previousTurns={turns}
+									turns={turns}
 								/>
 							) : (
 								<>
@@ -88,8 +88,7 @@ export default function App() {
 											onClick={() =>
 												setIsPlacingOpening(true)
 											}
-											className="px-20 py-8 bg-red-600 hover:bg-red-700 text-white text-4xl 
-                               font-bold rounded-full shadow-2xl transform hover:scale-105 transition"
+											className="px-20 py-8 bg-red-600 hover:bg-red-700 text-white text-4xl font-bold rounded-full shadow-2xl transform hover:scale-105 transition"
 										>
 											Random Opening Bingo
 										</button>
@@ -98,7 +97,7 @@ export default function App() {
 											sevenLetterWords={SEVENS}
 											onPlace={async (
 												newBoard,
-												word,
+												bingo,
 												row,
 												col,
 												direction
@@ -106,7 +105,7 @@ export default function App() {
 												try {
 													const updateTileBagResult =
 														await updateTileBag(
-															word,
+															bingo,
 															tileBag
 														);
 													console.log(
@@ -115,7 +114,7 @@ export default function App() {
 													const styleWithBlanksResult =
 														styleWithBlanks(
 															newBoard,
-															word,
+															bingo,
 															row,
 															col,
 															direction,
@@ -138,7 +137,7 @@ export default function App() {
 													setTurns((t) => [
 														...t,
 														{
-															word,
+															bingo,
 															row,
 															col,
 															direction,
@@ -204,7 +203,7 @@ export default function App() {
 									className="p-3 border rounded-lg shadow-sm bg-gray-50"
 								>
 									<div className="font-bold text-lg text-red-700">
-										{m.word}
+										{m.bingo}
 									</div>
 									<div className="text-sm text-gray-600">
 										Row {m.row + 1}, Col {m.col + 1}

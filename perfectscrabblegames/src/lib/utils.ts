@@ -1,6 +1,6 @@
 export type Direction = 'H' | 'V';
 export interface Turn {
-	word: string;
+	bingo: string;
 	row: number;
 	col: number;
 	direction: Direction;
@@ -10,13 +10,13 @@ export interface Turn {
 export const placeWord = (board: string[][], turn: Turn): string[][] => {
 	const newBoard = board.map((row) => [...row]);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { word, row, col, direction, score } = turn;
+	const { bingo, row, col, direction, score } = turn;
 
-	for (let i = 0; i < word.length; i++) {
+	for (let i = 0; i < bingo.length; i++) {
 		if (direction === 'H') {
-			newBoard[row][col + i] = word[i];
+			newBoard[row][col + i] = bingo[i];
 		} else {
-			newBoard[row + i][col] = word[i];
+			newBoard[row + i][col] = bingo[i];
 		}
 	}
 	return newBoard;
@@ -25,11 +25,11 @@ export const placeWord = (board: string[][], turn: Turn): string[][] => {
 export function getPlayedTiles(turns: Turn[]): Map<string, string> {
 	const played = new Map<string, string>(); // key: "r,c" → letter
 	for (const turn of turns) {
-		const { word, row, col, direction } = turn;
-		for (let i = 0; i < word.length; i++) {
+		const { bingo, row, col, direction } = turn;
+		for (let i = 0; i < bingo.length; i++) {
 			const r = direction === 'H' ? row : row + i;
 			const c = direction === 'H' ? col + i : col;
-			played.set(`${r},${c}`, word[i]);
+			played.set(`${r},${c}`, bingo[i]);
 		}
 	}
 	return played;
