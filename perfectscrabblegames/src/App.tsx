@@ -59,9 +59,7 @@ export default function App() {
 	useEffect(() => {
 		if (turns.length === 0) return;
 
-		const last = turns[turns.length - 1];
-
-		console.log(JSON.stringify(last, null, 2));
+		console.log(JSON.stringify(turns, null, 2));
 	}, [turns]);
 
 	return (
@@ -81,6 +79,7 @@ export default function App() {
 									eightLetterWords={EIGHTS}
 									turns={turns}
 									board={board}
+									tileBag={tileBag}
 									setBoard={setBoard}
 									setTurns={setTurns}
 								/>
@@ -111,9 +110,6 @@ export default function App() {
 															bingo,
 															tileBag
 														);
-													console.log(
-														updateTileBagResult
-													);
 													const styleWithBlanksResult =
 														styleWithBlanks(
 															newBoard,
@@ -146,8 +142,8 @@ export default function App() {
 															direction,
 															score: 0,
 															blanksUsed:
-																styleWithBlanksResult.blanksUsed,
-														},
+																styleWithBlanksResult.blanksUsed,														tileBag:
+															updateTileBagResult.tileBag,														},
 													]);
 												} catch (err) {
 													console.error(err);
