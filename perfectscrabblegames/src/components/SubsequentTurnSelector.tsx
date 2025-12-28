@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Turn } from '../lib/utils';
 import { findViablePlays } from '../lib/api/findViablePlays';
+import { LETTER_POINTS } from '../lib/setup';
 
 interface CandidatePlay extends Turn {
 	overlapTile: string;
@@ -57,22 +58,26 @@ export default function SubsequentTurnSelector({
 			const response = await findViablePlays(
 				bingo,
 				turns,
-				tileBag,
 				blanksRemaining
 			);
 			if (!response.viablePlays || response.viablePlays.length === 0) {
 				alert('No viable plays found for this bingo.');
 				return;
 			}
+			// Save original board before previewing
+			setOriginalBoard(board.map((r) => [...r]));
 			const mappedCandidates: CandidatePlay[] = response.viablePlays.map(
 				(r) => ({
+					id: r.id,
 					bingo: r.bingo,
 					row: r.row,
 					col: r.col,
 					direction: r.direction,
 					score: 0,
+					blanksUsed: 0, // API doesn't provide this for subsequent turns
 					overlapTile: r.overlapTile,
 					tileBag: r.tileBag,
+					tilesLeft: r.tilesLeft,
 				})
 			);
 			setCandidates(mappedCandidates);
@@ -85,14 +90,9 @@ export default function SubsequentTurnSelector({
 
 	// Update board preview when candidate changes
 	useEffect(() => {
-		if (candidates.length > 0) {
-			// Save original board on first preview
-			if (!originalBoard) {
-				setOriginalBoard(board.map((r) => [...r]));
-			}
-
+		if (candidates.length > 0 && originalBoard) {
 			const candidate = candidates[currentIndex];
-			const previewBoard = (originalBoard || board).map((r) => [...r]);
+			const previewBoard = originalBoard.map((r) => [...r]);
 
 			for (let i = 0; i < candidate.bingo.length; i++) {
 				const row =
@@ -108,8 +108,7 @@ export default function SubsequentTurnSelector({
 
 			setBoard(previewBoard);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [candidates, currentIndex]);
+	}, [candidates, currentIndex, originalBoard]);
 
 	// Accept the current candidate
 	const acceptCandidate = () => {
@@ -118,7 +117,17 @@ export default function SubsequentTurnSelector({
 
 		// The board is already showing the preview, we want to keep it
 		// Add the turn and clear preview state
-		setTurns([...turns, candidate]);
+		setTurns([...turns, {
+			id: turns.length + 1,
+			bingo: candidate.bingo,
+			row: candidate.row,
+			col: candidate.col,
+			direction: candidate.direction,
+			score: candidate.score,
+			blanksUsed: candidate.blanksUsed,
+			tileBag: candidate.tileBag,
+			tilesLeft: candidate.tilesLeft,
+		}]);
 		setOriginalBoard(null);
 
 		// Draw new bingo without restoring the board
@@ -146,10 +155,19 @@ export default function SubsequentTurnSelector({
 
 	return (
 		<div className="bg-white rounded-2xl shadow-2xl p-10 mt-12 max-w-3xl mx-auto space-y-6">
-			<h2 className="text-4xl font-bold text-green-900 text-center">
-				Next Bingo:{' '}
-				<span className="text-red-600 font-extrabold">{bingo}</span>
-			</h2>
+			<div className="flex justify-center gap-5">
+				{bingo.split('').map((l, i) => (
+					<div
+						key={i}
+						className="relative w-16 h-16 bg-amber-100 border-2 border-amber-600 rounded-lg shadow-xl flex items-center justify-center"
+					>
+						<span className="text-2xl font-bold">{l}</span>
+						<span className="absolute bottom-2 right-2 text-sm font-bold">
+							{LETTER_POINTS[l]}
+						</span>
+					</div>
+				))}
+			</div>
 
 			{candidates.length > 0 && (
 				<div className="text-center space-y-2 bg-blue-50 p-4 rounded-lg">
@@ -164,9 +182,6 @@ export default function SubsequentTurnSelector({
 						at position (Row {candidates[currentIndex].row + 1}, Col{' '}
 						{candidates[currentIndex].col + 1})
 					</p>
-					<p className="text-sm text-gray-500 italic">
-						Preview shown on board above
-					</p>
 				</div>
 			)}
 
@@ -175,19 +190,19 @@ export default function SubsequentTurnSelector({
 					<>
 						<button
 							onClick={nextCandidate}
-							className="px-12 py-5 bg-blue-600 hover:bg-blue-700 text-white text-3xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
+							className="px-5 py-5 bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
 						>
 							Next
 						</button>
 						<button
 							onClick={acceptCandidate}
-							className="px-12 py-5 bg-green-600 hover:bg-green-700 text-white text-3xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
+							className="px-5 py-5 bg-green-600 hover:bg-green-700 text-white text-xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
 						>
 							Accept
 						</button>
 						<button
 							onClick={drawNewBingo}
-							className="px-12 py-5 bg-orange-600 hover:bg-orange-700 text-white text-3xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
+							className="px-5 py-5 bg-orange-600 hover:bg-orange-700 text-white text-xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
 						>
 							New Bingo
 						</button>
@@ -196,20 +211,20 @@ export default function SubsequentTurnSelector({
 					<>
 						<button
 							onClick={findPlays}
-							className="px-12 py-5 bg-blue-600 hover:bg-blue-700 text-white text-3xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
+							className="px-12 py-5 bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
 						>
 							Find Viable Plays
 						</button>
 						<button
 							onClick={drawNewBingo}
-							className="px-12 py-5 bg-orange-600 hover:bg-orange-700 text-white text-3xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
+							className="px-12 py-5 bg-orange-600 hover:bg-orange-700 text-white text-xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
 						>
 							New Bingo
 						</button>
 						{onCancel && (
 							<button
 								onClick={onCancel}
-								className="px-12 py-5 bg-gray-600 hover:bg-gray-700 text-white text-3xl font-bold rounded-full shadow-xl"
+								className="px-12 py-5 bg-gray-600 hover:bg-gray-700 text-white text-xl font-bold rounded-full shadow-xl"
 							>
 								Cancel
 							</button>

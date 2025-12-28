@@ -4,7 +4,7 @@ import eightletterbingos from './assets/EightLetterBingos.txt?raw';
 import Board from './components/Board';
 import OpeningBingoSelector from './components/OpeningBingoSelector';
 import SubsequentTurnSelector from './components/SubsequentTurnSelector';
-import ClearBoard from './components/ClearBoard';
+import ResetBoard from './components/ResetBoard';
 import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/setup';
 import { styleWithBlanks } from './lib/styleWithBlanks';
 import { updateTileBag } from './lib/api/updateTileBag';
@@ -40,12 +40,23 @@ export default function App() {
 		((r: number, c: number) => void) | null
 	>(null);
 
+	const [selectedRow, setSelectedRow] = useState<number | null>(null);
+	const [selectedCol, setSelectedCol] = useState<number | null>(null);
+
 	const handleStartSquareSelected = useCallback(
 		(handler: (r: number, c: number) => void): (() => void) => {
 			setStartSquareHandler(() => handler);
 			return () => {
 				setStartSquareHandler(null);
 			};
+		},
+		[]
+	);
+
+	const handleSquareSelected = useCallback(
+		(r: number | null, c: number | null) => {
+			setSelectedRow(r);
+			setSelectedCol(c);
 		},
 		[]
 	);
@@ -67,13 +78,15 @@ export default function App() {
 			<div className="bg-white p-8 rounded-lg shadow-2xl mx-auto text-center">
 				<div className="flex justify-center gap-12 items-start w-full">
 					<div className="flex flex-col items-center">
-						<div className="bg-green-900 p-8 rounded-lg shadow-2xl">
+						<div className="bg-green-900 p-4 rounded-lg shadow-2xl max-w-2xl">
 							<Board
 								board={board}
 								onTileClick={handleBoardClick}
+								selectedRow={selectedRow}
+								selectedCol={selectedCol}
 							/>
 						</div>
-						<div className="mt-12 flex flex-col items-center space-y-8">
+						<div className="mt-2 flex flex-col items-center space-y-8">
 							{isFirstTurnDone ? (
 								<SubsequentTurnSelector
 									eightLetterWords={EIGHTS}
@@ -90,7 +103,7 @@ export default function App() {
 											onClick={() =>
 												setIsPlacingOpening(true)
 											}
-											className="px-20 py-8 bg-red-600 hover:bg-red-700 text-white text-4xl font-bold rounded-full shadow-2xl transform hover:scale-105 transition"
+											className="px-12 py-5 bg-red-600 hover:bg-red-700 text-white text-2xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
 										>
 											Random Opening Bingo
 										</button>
@@ -110,6 +123,21 @@ export default function App() {
 															bingo,
 															tileBag
 														);
+													// Correct negative tile counts
+													const correctedTileBag = {
+														...updateTileBagResult.tileBag,
+													};
+													for (const key in correctedTileBag) {
+														if (
+															correctedTileBag[
+																key
+															] < 0
+														) {
+															correctedTileBag[
+																key
+															] = 0;
+														}
+													}
 													const styleWithBlanksResult =
 														styleWithBlanks(
 															newBoard,
@@ -128,7 +156,7 @@ export default function App() {
 														return;
 													}
 													setTileBag(
-														updateTileBagResult.tileBag
+														correctedTileBag
 													);
 													setBoard(
 														styleWithBlanksResult.board
@@ -136,14 +164,18 @@ export default function App() {
 													setTurns((t) => [
 														...t,
 														{
+															id: t.length + 1,
 															bingo,
 															row,
 															col,
 															direction,
 															score: 0,
 															blanksUsed:
-																styleWithBlanksResult.blanksUsed,														tileBag:
-															updateTileBagResult.tileBag,														},
+																styleWithBlanksResult.blanksUsed,
+															tileBag:
+																correctedTileBag,
+															tilesLeft: Object.values(correctedTileBag).reduce((a, b) => a + b, 0),
+														},
 													]);
 												} catch (err) {
 													console.error(err);
@@ -152,9 +184,16 @@ export default function App() {
 												}
 												setIsPlacingOpening(false);
 												setIsFirstTurnDone(true);
+												setSelectedRow(null);
+												setSelectedCol(null);
 											}}
-											onCancel={() =>
-												setIsPlacingOpening(false)
+											onCancel={() => {
+												setIsPlacingOpening(false);
+												setSelectedRow(null);
+												setSelectedCol(null);
+											}}
+											onSquareSelected={
+												handleSquareSelected
 											}
 											onStartSquareSelected={
 												handleStartSquareSelected
@@ -164,7 +203,7 @@ export default function App() {
 								</>
 							)}
 
-							<ClearBoard
+							<ResetBoard
 								onClear={() => {
 									setBoard(
 										Array(BOARD_SIZE)
@@ -176,6 +215,9 @@ export default function App() {
 									setTurns([]);
 									setTileBag(INITIAL_TILEBAG);
 									setIsPlacingOpening(false);
+									setIsFirstTurnDone(false);
+									setSelectedRow(null);
+									setSelectedCol(null);
 									console.clear();
 								}}
 							/>

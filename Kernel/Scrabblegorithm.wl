@@ -235,7 +235,7 @@ ForbiddenSquares[word_String, startPos_List, direction_String : ("Right" | "Down
 	]
 ]
 
-(* Update 'forbidden squares taking into account the bingo to be overlapped. *)
+(* Update 'forbidden squares' taking into account the bingo to be overlapped. *)
 UpdateForbiddenSquares[assoc_, bingo_] :=
 DeleteDuplicates[
 	Flatten[

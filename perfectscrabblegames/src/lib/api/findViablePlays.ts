@@ -1,12 +1,14 @@
 import type { Turn } from '../utils';
 
 export interface ViablePlay {
+	id: number;
 	bingo: string;
 	row: number;
 	col: number;
 	direction: 'H' | 'V';
 	overlapTile: string;
 	tileBag: Record<string, number>;
+	tilesLeft: number;
 }
 
 export interface FindViablePlaysResponse {
@@ -16,13 +18,11 @@ export interface FindViablePlaysResponse {
 export async function findViablePlays(
 	bingo: string,
 	turns: Turn[],
-	tileBag: Record<string, number>,
 	blanksRemaining: number
 ): Promise<FindViablePlaysResponse> {
 	const params = new URLSearchParams();
 	params.append('bingo', bingo);
 	params.append('turns', JSON.stringify(turns));
-	params.append('tileBag', JSON.stringify(tileBag));
 	params.append('blanks', String(blanksRemaining));
 
 	const response = await fetch(

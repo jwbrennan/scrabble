@@ -3,7 +3,7 @@ interface Props {
 	onClear: () => void;
 }
 
-export default function ClearBoard({ onClear }: Props) {
+export default function ResetBoard({ onClear }: Props) {
 	return (
 		<button
 			onClick={onClear}

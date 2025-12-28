@@ -17,6 +17,7 @@ interface Props {
 	onStartSquareSelected: (
 		handler: (row: number, col: number) => void
 	) => (() => void) | undefined;
+	onSquareSelected: (row: number | null, col: number | null) => void;
 }
 
 export default function OpeningBingoSelector({
@@ -24,6 +25,7 @@ export default function OpeningBingoSelector({
 	onPlace,
 	onCancel,
 	onStartSquareSelected,
+	onSquareSelected,
 }: Props) {
 	const [openingBingo, setOpeningBingo] = useState<string>(() => {
 		return sevenLetterWords[
@@ -39,13 +41,14 @@ export default function OpeningBingoSelector({
 		const handler = (row: number, col: number) => {
 			setStartRow(row);
 			setStartCol(col);
+			onSquareSelected(row, col);
 		};
 		const cleanup = onStartSquareSelected(handler);
 
 		return () => {
 			cleanup?.();
 		};
-	}, [openingBingo, onStartSquareSelected]);
+	}, [openingBingo, onStartSquareSelected, onSquareSelected]);
 
 	const tryPlace = (direction: string) => {
 		if (startRow === null || startCol === null) return;
@@ -81,6 +84,8 @@ export default function OpeningBingoSelector({
 			col: startCol,
 			direction: direction as 'H' | 'V',
 			score: 0,
+			tileBag: {},
+			tilesLeft: 0,
 		});
 
 		onPlace(
@@ -93,18 +98,13 @@ export default function OpeningBingoSelector({
 	};
 	return (
 		<div className="bg-white rounded-2xl shadow-2xl p-8 mt-12 max-w-4xl mx-auto space-y-8">
-			<h2 className="text-5xl font-bold text-green-900 text-center">
-				Opening Bingo:{' '}
-				<span className="text-red-600">{openingBingo}</span>
-			</h2>
-
 			<div className="flex justify-center gap-5">
 				{openingBingo.split('').map((l, i) => (
 					<div
 						key={i}
-						className="relative w-24 h-24 bg-amber-100 border-4 border-amber-600 rounded-lg shadow-xl flex items-center justify-center"
+						className="relative w-16 h-16 bg-amber-100 border-2 border-amber-600 rounded-lg shadow-xl flex items-center justify-center"
 					>
-						<span className="text-7xl font-bold">{l}</span>
+						<span className="text-2xl font-bold">{l}</span>
 						<span className="absolute bottom-2 right-2 text-sm font-bold">
 							{LETTER_POINTS[l]}
 						</span>
@@ -112,7 +112,7 @@ export default function OpeningBingoSelector({
 				))}
 			</div>
 
-			<div className="text-3xl text-center">
+			<div className="text-xl text-center">
 				{startRow === null ? (
 					<p>
 						Click any square on the board to place the first letter
@@ -128,7 +128,7 @@ export default function OpeningBingoSelector({
 				<button
 					onClick={() => tryPlace('H')}
 					disabled={startRow === null}
-					className="px-10 py-6 bg-black text-white text-4xl font-bold rounded-lg
+					className="px-4 py-4 bg-black text-white text-xl font-bold rounded-lg
                    disabled:bg-gray-400 disabled:cursor-not-allowed
                    transition hover:scale-105"
 				>
@@ -138,7 +138,7 @@ export default function OpeningBingoSelector({
 				<button
 					onClick={() => tryPlace('V')}
 					disabled={startRow === null}
-					className="px-10 py-6 bg-black text-white text-4xl font-bold rounded-lg
+					className="px-4 py-4 bg-black text-white text-xl font-bold rounded-lg
                    disabled:bg-gray-400 disabled:cursor-not-allowed
                    transition hover:scale-105"
 				>
@@ -161,6 +161,7 @@ export default function OpeningBingoSelector({
 							);
 							setStartRow(null);
 							setStartCol(null);
+							onSquareSelected(null, null);
 						})()
 					}
 					className="px-10 py-4 bg-orange-600 hover:bg-orange-700 text-white text-2xl rounded-full"

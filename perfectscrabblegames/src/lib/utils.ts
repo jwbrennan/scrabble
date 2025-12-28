@@ -1,12 +1,15 @@
 export type Direction = 'H' | 'V';
 export interface Turn {
+	id: number;
 	bingo: string;
 	row: number;
 	col: number;
 	direction: Direction;
 	score: number;
+	blanksUsed: number;
+	tileBag: Record<string, number>; // Current tile bag after this turn
+	tilesLeft: number; // Total remaining tiles after this turn
 }
-
 export const placeWord = (board: string[][], turn: Turn): string[][] => {
 	const newBoard = board.map((row) => [...row]);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
