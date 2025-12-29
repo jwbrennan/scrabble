@@ -79,6 +79,7 @@ export default function OpeningBingoSelector({
 			.fill(null)
 			.map(() => Array(15).fill(''));
 		const newBoard = placeWord(emptyBoard, {
+			id: 0,
 			bingo: openingBingo,
 			row: startRow,
 			col: startCol,

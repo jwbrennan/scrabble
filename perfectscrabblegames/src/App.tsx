@@ -69,7 +69,6 @@ export default function App() {
 
 	useEffect(() => {
 		if (turns.length === 0) return;
-
 		console.log(JSON.stringify(turns, null, 2));
 	}, [turns]);
 
@@ -92,7 +91,6 @@ export default function App() {
 									eightLetterWords={EIGHTS}
 									turns={turns}
 									board={board}
-									tileBag={tileBag}
 									setBoard={setBoard}
 									setTurns={setTurns}
 								/>
@@ -118,26 +116,11 @@ export default function App() {
 												direction
 											) => {
 												try {
-													const updateTileBagResult =
+													const openingBingoTileBagResult =
 														await updateTileBag(
 															bingo,
 															tileBag
 														);
-													// Correct negative tile counts
-													const correctedTileBag = {
-														...updateTileBagResult.tileBag,
-													};
-													for (const key in correctedTileBag) {
-														if (
-															correctedTileBag[
-																key
-															] < 0
-														) {
-															correctedTileBag[
-																key
-															] = 0;
-														}
-													}
 													const styleWithBlanksResult =
 														styleWithBlanks(
 															newBoard,
@@ -145,7 +128,7 @@ export default function App() {
 															row,
 															col,
 															direction,
-															updateTileBagResult
+															openingBingoTileBagResult.blanks
 														);
 													if (
 														!styleWithBlanksResult
@@ -156,7 +139,7 @@ export default function App() {
 														return;
 													}
 													setTileBag(
-														correctedTileBag
+														openingBingoTileBagResult.tileBag
 													);
 													setBoard(
 														styleWithBlanksResult.board
@@ -169,12 +152,18 @@ export default function App() {
 															row,
 															col,
 															direction,
-															score: 0,
-															blanksUsed:
-																styleWithBlanksResult.blanksUsed,
+															blanks: styleWithBlanksResult.blanks,
 															tileBag:
-																correctedTileBag,
-															tilesLeft: Object.values(correctedTileBag).reduce((a, b) => a + b, 0),
+																openingBingoTileBagResult.tileBag,
+															tilesLeft:
+																Object.values(
+																	openingBingoTileBagResult.tileBag
+																).reduce(
+																	(a, b) =>
+																		a + b,
+																	0
+																),
+															score: 0,
 														},
 													]);
 												} catch (err) {
@@ -251,6 +240,9 @@ export default function App() {
 									</div>
 									<div className="text-sm text-gray-600">
 										Direction: {m.direction}
+									</div>
+									<div className="text-sm text-gray-600">
+										Blanks: {m.blanks}
 									</div>
 								</li>
 							))}

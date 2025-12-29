@@ -5,15 +5,15 @@ export interface Turn {
 	row: number;
 	col: number;
 	direction: Direction;
+	blanks: string[];
+	tileBag: Record<string, number>;
+	tilesLeft: number;
 	score: number;
-	blanksUsed: number;
-	tileBag: Record<string, number>; // Current tile bag after this turn
-	tilesLeft: number; // Total remaining tiles after this turn
 }
 export const placeWord = (board: string[][], turn: Turn): string[][] => {
 	const newBoard = board.map((row) => [...row]);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { bingo, row, col, direction, score } = turn;
+	const { bingo, row, col, direction } = turn;
 
 	for (let i = 0; i < bingo.length; i++) {
 		if (direction === 'H') {
