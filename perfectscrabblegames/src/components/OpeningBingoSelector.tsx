@@ -84,6 +84,7 @@ export default function OpeningBingoSelector({
 			row: startRow,
 			col: startCol,
 			direction: direction as 'H' | 'V',
+			blanks: [],
 			score: 0,
 			tileBag: {},
 			tilesLeft: 0,

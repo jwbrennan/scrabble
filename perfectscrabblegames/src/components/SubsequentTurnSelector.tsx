@@ -22,9 +22,10 @@ export default function SubsequentTurnSelector({
 	setTurns,
 	onCancel,
 }: Props) {
-	const [shuffledWords] = useState<string[]>(() =>
+	const [words] = useState<string[]>(() =>
 		[...eightLetterWords].sort(() => Math.random() - 0.5)
 	);
+	const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
 	const [candidates, setCandidates] = useState<CandidatePlay[]>([]);
 	const [currentCandidateIndex, setCurrentCandidateIndex] = useState(0);
@@ -34,43 +35,57 @@ export default function SubsequentTurnSelector({
 
 	const findNextViablePlay = async () => {
 		setIsSearching(true);
-		const randomIndex = Math.floor(Math.random() * shuffledWords.length);
-		const word = shuffledWords[randomIndex];
-		setCurrentCheckingWord(word);
-
-		try {
-			const response = await findViablePlays(word, turns);
-			if (response.viablePlays && response.viablePlays.length > 0) {
-				const mapped: CandidatePlay[] = response.viablePlays.map(
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					(p: any) => ({
-						id: turns.length + 1,
-						bingo: p.bingo,
-						row: p.row,
-						col: p.col,
-						direction: p.direction,
-						blanks: p.blanks || [],
-						overlapTile: p.overlapTile,
-						tileBag: p.tileBag,
-						tilesLeft: p.tilesLeft,
-						score: 0,
-					})
-				);
-				setCandidates(mapped);
-				setCurrentCandidateIndex(0);
-				setOriginalBoard(board.map((row) => [...row]));
-				setIsSearching(false);
-				setCurrentCheckingWord('');
-			} else {
-				// No plays, just reset
-				setIsSearching(false);
-				setCurrentCheckingWord('');
+		let index = currentWordIndex;
+		while (index < words.length) {
+			const word = words[index];
+			setCurrentCheckingWord(word);
+			try {
+				const response = await findViablePlays(word, turns);
+				if (
+					response.success === false &&
+					response.error === 'NO-VIABLE-PLAYS'
+				) {
+					index++;
+					continue;
+				}
+				if (response.viablePlays && response.viablePlays.length > 0) {
+					const mapped: CandidatePlay[] = response.viablePlays.map(
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						(p: any) => ({
+							id: turns.length + 1,
+							bingo: p.bingo,
+							row: p.row,
+							col: p.col,
+							direction: p.direction,
+							blanks: p.blanks || [],
+							overlapTile: p.overlapTile,
+							tileBag: p.tileBag,
+							tilesLeft: p.tilesLeft,
+							score: 0,
+						})
+					);
+					setCandidates(mapped);
+					setCurrentCandidateIndex(0);
+					setOriginalBoard(board.map((row) => [...row]));
+					setIsSearching(false);
+					setCurrentCheckingWord('');
+					setCurrentWordIndex(index + 1);
+					return;
+				}
+			} catch (err) {
+				console.error('Error finding viable plays:', err);
+				index++;
+				continue;
 			}
-		} catch (err) {
-			console.error('Error finding viable plays:', err);
-			setIsSearching(false);
-			setCurrentCheckingWord('');
+			index++;
 		}
+		// No viable plays found in remaining words
+		setIsSearching(false);
+		setCurrentCheckingWord('');
+		setCurrentWordIndex(0); // Reset for next time
+		alert(
+			'No more viable 8-letter bingos found for the current board state.'
+		);
 	};
 
 	// Reset search when turns change (e.g. after accepting a play)
@@ -82,8 +97,18 @@ export default function SubsequentTurnSelector({
 			setOriginalBoard(null);
 			setIsSearching(false);
 			setCurrentCheckingWord('');
+			setCurrentWordIndex(0);
 		}
 	}, [turns.length]);
+
+	// Automatically start searching for next play when ready
+	useEffect(() => {
+		if (candidates.length === 0 && !isSearching && turns.length > 0) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
+			findNextViablePlay();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [candidates.length, isSearching, turns.length]);
 
 	const acceptCandidate = async (candidate: CandidatePlay) => {
 		try {
@@ -164,14 +189,11 @@ export default function SubsequentTurnSelector({
 			return (
 				<div className="text-center py-12">
 					<p className="text-2xl text-gray-700 mb-6">
-						Ready to find the next viable 8-letter bingo
+						Automatically finding the next viable 8-letter bingo
 					</p>
-					<button
-						onClick={findNextViablePlay}
-						className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-lg"
-					>
-						Find Next Viable Play
-					</button>
+					<p className="text-lg text-gray-500">
+						This may take a moment as we check multiple words...
+					</p>
 				</div>
 			);
 		}

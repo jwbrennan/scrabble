@@ -13,7 +13,9 @@ export interface ViablePlay {
 }
 
 export interface FindViablePlaysResponse {
-	viablePlays: ViablePlay[];
+	success?: boolean;
+	error?: string;
+	viablePlays?: ViablePlay[];
 }
 
 export async function findViablePlays(
