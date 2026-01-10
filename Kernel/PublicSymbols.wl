@@ -55,9 +55,6 @@ GU`SetUsage[ForbiddenSquaresNew,
 GU`SetUsage[FindBingoSpots,
 	"Find spots to play the next bingo through previous horizontal/vertical turns."
 ];
-GU`SetUsage[FindBingoSpots,
-	"Find spots to play the next bingo through previous horizontal/vertical turns."
-];
 GU`SetUsage[FindViablePlays,
 	"Find all possible locations to play a bingo given a set of previous turns."
 ];

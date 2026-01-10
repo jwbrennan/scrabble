@@ -239,8 +239,8 @@ Module[
 							{turn = #},
 							If[
 								turn["id"] == playThroughTurn,
-								Battleship[turn],
-								ForbiddenSquares[turn]
+								BattleshipNew[turn],
+								ForbiddenSquaresNew[turn]
 							]
 						] &,
 					turns
@@ -254,7 +254,7 @@ Module[
 	validPlays =
 	Select[
 		playsWithForbiddenSquares,
-		ListQ[#["tileBag"]] && Length[Intersection[Battleship[#], #["forbiddenSquares"]]] == 1 &
+		ListQ[#["tileBag"]] && Length[Intersection[BattleshipNew[#], #["forbiddenSquares"]]] == 1 &
 	];
 	If[
 		Length[validPlays] > 0,
