@@ -43,4 +43,29 @@ GU`SetUsage[PerfectScrabbleGameQ,
 	"Checks if a game fulfills the criteria of a Perfect Scrabble Game."
 ];
 
+GU`SetUsage[UpdateTileBag,
+	"Updates the tile bag association after playing a bingo, accounting for blanks used if necessary."
+];
+GU`SetUsage[BattleshipNew,
+	"Identify squares used up by a 'bingo' placed at '(row, col)'."
+];
+GU`SetUsage[ForbiddenSquaresNew,
+	"Identify squares in the 'forbidden zones' around already played words."
+];
+GU`SetUsage[FindBingoSpots,
+	"Find spots to play the next bingo through previous horizontal/vertical turns."
+];
+GU`SetUsage[FindBingoSpots,
+	"Find spots to play the next bingo through previous horizontal/vertical turns."
+];
+GU`SetUsage[FindViablePlays,
+	"Find all possible locations to play a bingo given a set of previous turns."
+];
+GU`SetUsage[CanFormWord,
+	"Check if a word can be formed from the given tiles."
+];
+GU`SetUsage[CullBingoList,
+	"Cull the list of possible bingos based on the tiles remaining."
+];
+
 EndPackage[]

@@ -11,12 +11,16 @@ Get["Scrabbology`PublicSymbols`"];
 (* Declare package symbols (not exported from the package, but can be used in any file). *)
 Get["Scrabbology`PackageScope`"];
 
-Get[#] & /@ {
-	"Scrabbology`ScrabbleHelper`",
-	"Scrabbology`ScrabbleBoard`",
-	"Scrabbology`PriorVersions`",
-	"Scrabbology`Scrabblegorithm`"
-	};
+Map[
+	Get,
+	{
+		"Scrabbology`ScrabbleHelper`",
+		"Scrabbology`ScrabbleBoard`",
+		"Scrabbology`PriorVersions`",
+		"Scrabbology`Scrabblegorithm`",
+		"Scrabbology`APIFunctions`"
+	}
+];
 	
 
 EndPackage[]
