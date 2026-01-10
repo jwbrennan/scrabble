@@ -267,8 +267,7 @@ Module[
 		Return[
 			{
 				"success" -> False,
-				"error" ->
-				"NO-VIABLE-PLAYS"
+				"error" -> "NO-VIABLE-PLAYS"
 			}
 		]
 	]
