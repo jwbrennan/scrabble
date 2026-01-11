@@ -92,7 +92,7 @@ export default function SubsequentTurnSelector({
 	}, [candidates.length, isSearching, turns.length, noMoreFound]);
 
 	const acceptCandidate = async (candidate: CandidatePlay) => {
-		const result = acceptCandidateUtil(candidate, board, turns, words);
+		const result = acceptCandidateUtil(candidate, board, turns, words, eightLetterWords);
 		if (!result) {
 			alert('Error applying word to board!');
 			return;

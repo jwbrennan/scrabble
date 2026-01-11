@@ -115,7 +115,8 @@ export function acceptCandidate(
 	candidate: CandidatePlay,
 	board: string[][],
 	turns: Turn[],
-	words: string[]
+	words: string[],
+	eightLetterWords: string[]
 ): {
 	board: string[][];
 	turns: Turn[];
@@ -152,12 +153,25 @@ export function acceptCandidate(
 		];
 
 		const newTurnsCount = newTurns.length;
-		let culledWords = cullWords(words, candidate.tileBag, newTurnsCount);
+		let wordsToCull = words;
+		if (newTurnsCount === 12 || newTurnsCount === 13) {
+			wordsToCull = eightLetterWords;
+		}
+		let culledWords = cullWords(
+			wordsToCull,
+			candidate.tileBag,
+			newTurnsCount
+		);
 		// Shuffle the culled list to randomize the order
 		culledWords = [...culledWords].sort(() => Math.random() - 0.5);
 
 		console.log('Remaining tiles:', getTilesString(candidate.tileBag));
-		console.log(`Culled and shuffled words: ${words.length} -> ${culledWords.length} for turn ${newTurnsCount}`);
+		console.log(
+			`Culled and shuffled words: ${wordsToCull.length} -> ${culledWords.length} for turn ${newTurnsCount}`
+		);
+		console.log(
+			`Culled from ${wordsToCull === words ? 'current' : 'original'} list`
+		);
 		if (newTurnsCount >= 12) {
 			console.log('Culled list (using blanks):', culledWords);
 		}

@@ -147,7 +147,8 @@ Module[
 	]
 ];
 
-FindViablePlays[bingo_String, turns_List] :=
+(* For every turn in 'turns' I need the bingo, col, row, direction. *)
+FindViablePlays[bingo_String, turns_List, currentTileBag_Association] :=
 Module[
 	{
 		plays = {}, spots, avoidCols, playDown, avoidRows, playAcross, playsWithTileBag, playsWithForbiddenSquares, validPlays
@@ -190,10 +191,10 @@ Module[
 						ConfirmMatch[
 							With[
 								{
-									blanksIntervene = If[Length[turns] < 12, 0, Min[Last[turns]["tileBag"]["?"], 1]]
+									blanksIntervene = If[Length[turns] < 12, 0, Min[currentTileBag["?"], 1]]
 								},
 								UpdateTileBag[
-									Last[turns]["tileBag"], 
+									currentTileBag, 
 									StringJoin[DeleteElements[Characters[possibleBingo], 1 -> {overlapTile}]], 
 									blanksIntervene
 								]
