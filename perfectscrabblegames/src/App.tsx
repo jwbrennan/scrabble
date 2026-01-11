@@ -8,6 +8,7 @@ import ResetBoard from './components/ResetBoard';
 import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/gameSetup';
 import { styleWithBlanks } from './lib/styleWithBlanks';
 import { updateTileBag } from './lib/api/updateTileBag';
+import { getTilesString } from './lib/utils';
 import type { Turn } from './lib/utils';
 
 const SEVENS = sevenletterbingos
@@ -79,6 +80,18 @@ export default function App() {
 								selectedRow={selectedRow}
 								selectedCol={selectedCol}
 							/>
+						</div>
+						<div className="mt-4 text-center">
+							<p className="text-xl font-semibold max-w-lg mx-auto break-words">
+								Tile Bag:{' '}
+								<span className="font-mono">
+									{getTilesString(
+										turns.length > 0
+											? turns[turns.length - 1].tileBag
+											: tileBag
+									)}
+								</span>
+							</p>
 						</div>
 						<div className="mt-2 flex flex-col items-center space-y-8">
 							{isFirstTurnDone ? (

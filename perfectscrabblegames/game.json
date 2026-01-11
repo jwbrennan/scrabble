@@ -1,0 +1,63 @@
+
+[
+	[
+	{
+		"id":1,"bingo":"SANGERS","row":7,"col":1,"direction":"H","blanks":[]
+	},
+	{
+		"id":2,"bingo":"IRONLIKE","row":0,"col":5,"direction":"V","blanks":[]
+	},
+	{
+		"id":3,"bingo":"MADWOMEN","row":0,"col":3,"direction":"V","blanks":[]
+	},
+	{
+		"id":4,"bingo":"PERIQUES","row":0,"col":1,"direction":"V","blanks":[]
+	},
+	{
+		"id":5,"bingo":"LOBBYERS","row":0,"col":7,"direction":"V","blanks":[]
+	},
+	{
+		"id":6,"bingo":"GOSPODAR","row":7,"col":4,"direction":"V","blanks":[]
+	},
+	{
+		"id":7,"bingo":"ROUGHEST","row":6,"col":7,"direction":"H","blanks":[]
+	},
+	{
+		"id":8,"bingo":"UNHIVING","row":6,"col":9,"direction":"V","blanks":[]
+	},
+	{
+		"id":9,"bingo":"OXALATED","row":1,"col":7,"direction":"H","blanks":[]
+	},
+	{
+		"id":10,"bingo":"HANDCUFF","row":6,"col":11,"direction":"V","blanks":[]
+	},
+	{
+		"id":11,"bingo":"SYLVATIC","row":6,"col":13,"direction":"V","blanks":[]
+	},
+	{
+		"id":12,"bingo":"REINJURE","row":7,"col":6,"direction":"V","blanks":[]
+	},
+	{
+		"id":13,"bingo":"BIOWASTE","row":3,"col":7,"direction":"H","blanks":["S"]
+	},
+	{
+		"id":14,"bingo":"AZOTEMIA","row":7,"col":2,"direction":"V","blanks":["M"]
+	}
+],
+[
+	{"id":1,"bingo":"NUGGETS","row":7,"col":1,"direction":"H","blanks":[]},
+	{"id":2,"bingo":"UNMANNED","row":7,"col":2,"direction":"V","blanks":[]},
+	{"id":3,"bingo":"JOKESOME","row":0,"col":5,"direction":"V","blanks":[]},
+	{"id":4,"bingo":"RELIVERS","row":0,"col":7,"direction":"V","blanks":[]},
+	{"id":5,"bingo":"EARWAXES","row":1,"col":7,"direction":"H","blanks":[]},
+	{"id":6,"bingo":"TEALIGHT","row":7,"col":6,"direction":"V","blanks":[]},
+	{"id":7,"bingo":"AUTOTYPY","row":9,"col":6,"direction":"H","blanks":[]},
+	{"id":8,"bingo":"EXORCIZE","row":0,"col":12,"direction":"V","blanks":[]},
+	{"id":9,"bingo":"GRAFFITI","row":7,"col":4,"direction":"V","blanks":[]},
+	{"id":10,"bingo":"VOLITION","row":0,"col":1,"direction":"V","blanks":[]},
+	{"id":11,"bingo":"QUANDANG","row":0,"col":3,"direction":"V","blanks":[]},
+	{"id":12,"bingo":"GAOLBIRD","row":12,"col":6,"direction":"H","blanks":[]},
+	{"id":13,"bingo":"PREBOUND","row":0,"col":9,"direction":"V","blanks":["N"]},
+	{"id":14,"bingo":"SWEETISH","row":1,"col":14,"direction":"V","blanks":["T"]}
+]
+]
