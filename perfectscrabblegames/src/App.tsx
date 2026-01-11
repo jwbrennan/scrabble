@@ -1,11 +1,11 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import sevenletterbingos from './assets/SevenLetterBingos.txt?raw';
 import eightletterbingos from './assets/EightLetterBingos.txt?raw';
 import Board from './components/Board';
 import OpeningBingoSelector from './components/OpeningBingoSelector';
 import SubsequentTurnSelector from './components/SubsequentTurnSelector';
 import ResetBoard from './components/ResetBoard';
-import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/setup';
+import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/gameSetup';
 import { styleWithBlanks } from './lib/styleWithBlanks';
 import { updateTileBag } from './lib/api/updateTileBag';
 import type { Turn } from './lib/utils';
@@ -66,11 +66,6 @@ export default function App() {
 	};
 
 	const [turns, setTurns] = useState<Turn[]>([]);
-
-	useEffect(() => {
-		if (turns.length === 0) return;
-		console.log(JSON.stringify(turns, null, 2));
-	}, [turns]);
 
 	return (
 		<div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -226,26 +221,26 @@ export default function App() {
 							<p className="text-gray-500">No Turns</p>
 						)}
 
-						<ul className="space-y-2">
-							{turns.map((m, i) => (
-								<li
-									key={i}
-									className="p-3 border rounded-lg shadow-sm bg-gray-50"
-								>
-									<div className="font-bold text-lg text-red-700">
-										{m.bingo}
-									</div>
-									<div className="text-sm text-gray-600">
-										Row {m.row + 1}, Col {m.col + 1}
-									</div>
-									<div className="text-sm text-gray-600">
-										Direction: {m.direction}
-									</div>
-									<div className="text-sm text-gray-600">
-										Blanks: {m.blanks}
-									</div>
-								</li>
-							))}
+						<ul className="space-y-1">
+							{turns.map((m, i) => {
+								const blanksText =
+									m.blanks.length > 0
+										? `, Blanks: ${m.blanks}`
+										: '';
+								return (
+									<li
+										key={i}
+										className="text-sm text-gray-600 bg-gray-50 px-2 py-1 rounded"
+									>
+										<strong className="text-red-700">
+											Turn {m.id}:
+										</strong>{' '}
+										{m.bingo}, Row {m.row + 1}, Col{' '}
+										{m.col + 1}, Dir: {m.direction}
+										{blanksText}
+									</li>
+								);
+							})}
 						</ul>
 					</div>
 				</div>

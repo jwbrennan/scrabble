@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import type { Turn } from '../lib/utils';
-import { findViablePlays } from '../lib/api/findViablePlays';
-import { styleWithBlanks } from '../lib/styleWithBlanks';
-import CandidatePlayDisplay, {
+import {
+	findNextViablePlay as findNextViablePlayUtil,
+	acceptCandidate as acceptCandidateUtil,
+	skipWord as skipWordUtil,
+	goToPreviousCandidate as goToPreviousCandidateUtil,
+	goToNextCandidate as goToNextCandidateUtil,
 	type CandidatePlay,
-} from './CandidatePlayDisplay';
+} from '../lib/candidatePlays';
+import CandidatePlayDisplay from './CandidatePlayDisplay';
 interface Props {
 	eightLetterWords: string[];
 	turns: Turn[];
@@ -22,7 +26,7 @@ export default function SubsequentTurnSelector({
 	setTurns,
 	onCancel,
 }: Props) {
-	const [words] = useState<string[]>(() =>
+	const [words, setWords] = useState<string[]>(() =>
 		[...eightLetterWords].sort(() => Math.random() - 0.5)
 	);
 	const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -31,61 +35,32 @@ export default function SubsequentTurnSelector({
 	const [currentCandidateIndex, setCurrentCandidateIndex] = useState(0);
 	const [originalBoard, setOriginalBoard] = useState<string[][] | null>(null);
 	const [isSearching, setIsSearching] = useState(false);
-	const [currentCheckingWord, setCurrentCheckingWord] = useState<string>('');
+	const [noMoreFound, setNoMoreFound] = useState(false);
 
 	const findNextViablePlay = async () => {
-		setIsSearching(true);
-		let index = currentWordIndex;
-		while (index < words.length) {
-			const word = words[index];
-			setCurrentCheckingWord(word);
-			try {
-				const response = await findViablePlays(word, turns);
-				if (
-					response.success === false &&
-					response.error === 'NO-VIABLE-PLAYS'
-				) {
-					index++;
-					continue;
-				}
-				if (response.viablePlays && response.viablePlays.length > 0) {
-					const mapped: CandidatePlay[] = response.viablePlays.map(
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						(p: any) => ({
-							id: turns.length + 1,
-							bingo: p.bingo,
-							row: p.row,
-							col: p.col,
-							direction: p.direction,
-							blanks: p.blanks || [],
-							overlapTile: p.overlapTile,
-							tileBag: p.tileBag,
-							tilesLeft: p.tilesLeft,
-							score: 0,
-						})
-					);
-					setCandidates(mapped);
-					setCurrentCandidateIndex(0);
-					setOriginalBoard(board.map((row) => [...row]));
-					setIsSearching(false);
-					setCurrentCheckingWord('');
-					setCurrentWordIndex(index + 1);
-					return;
-				}
-			} catch (err) {
-				console.error('Error finding viable plays:', err);
-				index++;
-				continue;
-			}
-			index++;
-		}
-		// No viable plays found in remaining words
-		setIsSearching(false);
-		setCurrentCheckingWord('');
-		setCurrentWordIndex(0); // Reset for next time
-		alert(
-			'No more viable 8-letter bingos found for the current board state.'
+		console.log(
+			'findNextViablePlay called, words.length:',
+			words.length,
+			'currentWordIndex:',
+			currentWordIndex
 		);
+		setIsSearching(true);
+		const result = await findNextViablePlayUtil(
+			words,
+			currentWordIndex,
+			turns
+		);
+		if (result) {
+			setCandidates(result.candidates);
+			setCurrentCandidateIndex(0);
+			setOriginalBoard(board.map((row) => [...row]));
+			setCurrentWordIndex(result.nextIndex);
+			setNoMoreFound(false);
+		} else {
+			setCurrentWordIndex(0); // Reset for next time
+			setNoMoreFound(true);
+		}
+		setIsSearching(false);
 	};
 
 	// Reset search when turns change (e.g. after accepting a play)
@@ -96,93 +71,104 @@ export default function SubsequentTurnSelector({
 			setCurrentCandidateIndex(0);
 			setOriginalBoard(null);
 			setIsSearching(false);
-			setCurrentCheckingWord('');
 			setCurrentWordIndex(0);
+			setNoMoreFound(false);
 		}
 	}, [turns.length]);
 
 	// Automatically start searching for next play when ready
 	useEffect(() => {
-		if (candidates.length === 0 && !isSearching && turns.length > 0) {
+		if (
+			candidates.length === 0 &&
+			!isSearching &&
+			turns.length > 0 &&
+			turns.length < 14 &&
+			!noMoreFound
+		) {
 			// eslint-disable-next-line react-hooks/set-state-in-effect
 			findNextViablePlay();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [candidates.length, isSearching, turns.length]);
+	}, [candidates.length, isSearching, turns.length, noMoreFound]);
 
 	const acceptCandidate = async (candidate: CandidatePlay) => {
-		try {
-			const styledResult = styleWithBlanks(
-				board,
-				candidate.bingo,
-				candidate.row,
-				candidate.col,
-				candidate.direction,
-				candidate.blanks
-			);
-
-			if (!styledResult) {
-				alert('Error applying word to board!');
-				return;
-			}
-
-			setBoard(styledResult.board);
-
-			setTurns((prev) => [
-				...prev,
-				{
-					id: prev.length + 1,
-					bingo: candidate.bingo,
-					row: candidate.row,
-					col: candidate.col,
-					direction: candidate.direction,
-					score: 0,
-					blanks: styledResult.blanks,
-					tileBag: candidate.tileBag,
-					tilesLeft: candidate.tilesLeft,
-				},
-			]);
-
-			// Reset for next search
-			setCandidates([]);
-			setCurrentCandidateIndex(0);
-			setOriginalBoard(null);
-		} catch (err) {
-			console.error(err);
-			alert('Failed to accept play');
+		const result = acceptCandidateUtil(candidate, board, turns, words);
+		if (!result) {
+			alert('Error applying word to board!');
+			return;
 		}
-	};
-
-	const skipWord = () => {
+		setBoard(result.board);
+		setTurns(result.turns);
+		setWords(result.words);
+		// Reset for next search
 		setCandidates([]);
 		setCurrentCandidateIndex(0);
 		setOriginalBoard(null);
-		if (originalBoard) setBoard(originalBoard);
+		setCurrentWordIndex(0); // Ensure we start from the beginning of the new culled list
+	};
+
+	const skipWord = () => {
+		const result = skipWordUtil(originalBoard);
+		setCandidates(result.candidates);
+		setCurrentCandidateIndex(result.currentCandidateIndex);
+		if (result.board) setBoard(result.board);
 	};
 
 	const goToPreviousCandidate = () => {
-		setCurrentCandidateIndex((i) => Math.max(0, i - 1));
+		setCurrentCandidateIndex(
+			goToPreviousCandidateUtil(currentCandidateIndex)
+		);
 	};
 
 	const goToNextCandidate = () => {
-		setCurrentCandidateIndex((i) => Math.min(candidates.length - 1, i + 1));
+		setCurrentCandidateIndex(
+			goToNextCandidateUtil(currentCandidateIndex, candidates.length)
+		);
 	};
 
 	// Loading state: searching through words
 	if (candidates.length === 0) {
+		if (turns.length >= 14) {
+			return (
+				<div className="text-center py-12">
+					<p className="text-2xl text-gray-700 mb-6">
+						🎉 Game Complete! 🎉
+					</p>
+					<p className="text-lg text-gray-500">
+						You've successfully played 14 perfect Scrabble turns!
+					</p>
+					<p className="text-lg text-gray-500 mt-4">
+						No more API calls will be made.
+					</p>
+				</div>
+			);
+		}
 		if (isSearching) {
 			return (
 				<div className="text-center py-12">
 					<p className="text-2xl text-gray-700">
-						Searching for viable 8-letter bingo using{' '}
-						<span className="font-bold text-amber-600">
-							{currentCheckingWord}
-						</span>
-						...
+						Searching for viable 8-letter bingo...
 					</p>
 					<p className="text-lg text-gray-500 mt-4">
 						Checking overlaps with existing plays...
 					</p>
+				</div>
+			);
+		} else if (noMoreFound) {
+			return (
+				<div className="text-center py-12">
+					<p className="text-2xl text-gray-700 mb-6">
+						No more viable 8-letter bingos found for the current
+						board state.
+					</p>
+					{onCancel && (
+						<button
+							onClick={onCancel}
+							className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+						>
+							Cancel
+						</button>
+					)}
 				</div>
 			);
 		} else {

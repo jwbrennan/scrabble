@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
-import type { Turn } from '../lib/utils';
 import { styleWithBlanks } from '../lib/styleWithBlanks';
-import { LETTER_POINTS } from '../lib/setup';
-
-export interface CandidatePlay extends Turn {
-	overlapTile: string;
-}
+import { LETTER_POINTS } from '../lib/gameSetup';
+import type { CandidatePlay } from '../lib/candidatePlays';
 
 interface Props {
 	candidates: CandidatePlay[];
@@ -93,36 +89,42 @@ export default function CandidatePlayDisplay({
 				</div>
 			</div>
 
-			<div className="flex justify-center gap-6 flex-wrap">
-				<button
-					onClick={onPrevious}
-					disabled={currentCandidateIndex === 0}
-					className="px-6 py-3 bg-gray-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-				>
-					Previous
-				</button>
+			<div className="space-y-4">
+				{/* Navigation buttons */}
+				<div className="flex justify-center gap-4">
+					<button
+						onClick={onPrevious}
+						disabled={currentCandidateIndex === 0}
+						className="px-6 py-3 bg-gray-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+					>
+						Previous
+					</button>
+					<button
+						onClick={onNext}
+						disabled={
+							currentCandidateIndex === candidates.length - 1
+						}
+						className="px-6 py-3 bg-gray-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+					>
+						Next
+					</button>
+				</div>
 
-				<button
-					onClick={() => onAccept(currentCandidate)}
-					className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-lg"
-				>
-					Accept This Play
-				</button>
-
-				<button
-					onClick={onSkip}
-					className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg"
-				>
-					Skip This Word
-				</button>
-
-				<button
-					onClick={onNext}
-					disabled={currentCandidateIndex === candidates.length - 1}
-					className="px-6 py-3 bg-gray-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-				>
-					Next
-				</button>
+				{/* Action buttons */}
+				<div className="flex justify-center gap-4">
+					<button
+						onClick={onSkip}
+						className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+					>
+						Skip This Word
+					</button>
+					<button
+						onClick={() => onAccept(currentCandidate)}
+						className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-lg"
+					>
+						Accept This Play
+					</button>
+				</div>
 			</div>
 
 			{onCancel && (

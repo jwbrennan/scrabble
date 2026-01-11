@@ -1,6 +1,6 @@
 // Prompts user to click a starting square and select direction for opening bingo
 import { useState, useEffect } from 'react';
-import { CENTER, LETTER_POINTS } from '../lib/setup';
+import { CENTER, LETTER_POINTS } from '../lib/gameSetup';
 import { placeWord } from '../lib/utils';
 
 interface Props {
