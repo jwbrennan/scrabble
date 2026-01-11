@@ -1,6 +1,6 @@
 // Styling and structure for the Scrabble board
 import clsx from 'clsx';
-import { PREMIUM, LETTER_POINTS } from '../lib/setup';
+import { PREMIUM, LETTER_POINTS } from '../lib/gameSetup';
 
 interface Props {
 	board: string[][];
