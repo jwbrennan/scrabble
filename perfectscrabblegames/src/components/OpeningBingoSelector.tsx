@@ -88,6 +88,7 @@ export default function OpeningBingoSelector({
 			score: 0,
 			tileBag: {},
 			tilesLeft: 0,
+			overlap: null,
 		});
 
 		onPlace(

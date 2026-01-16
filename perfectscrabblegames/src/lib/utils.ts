@@ -9,6 +9,10 @@ export interface Turn {
 	tileBag: Record<string, number>;
 	tilesLeft: number;
 	score: number;
+	overlap: {
+		tile: string;
+		index: number;
+	} | null;
 }
 export const placeWord = (board: string[][], turn: Turn): string[][] => {
 	const newBoard = board.map((row) => [...row]);

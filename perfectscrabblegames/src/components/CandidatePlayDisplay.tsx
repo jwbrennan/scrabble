@@ -37,7 +37,7 @@ export default function CandidatePlayDisplay({
 			candidate.row,
 			candidate.col,
 			candidate.direction,
-			candidate.blanks
+			candidate.blanks,
 		);
 
 		if (styledResult) {
@@ -77,7 +77,7 @@ export default function CandidatePlayDisplay({
 					<p className="text-lg text-gray-600">
 						Overlaps on:{' '}
 						<span className="font-bold">
-							{currentCandidate.overlapTile}
+							{currentCandidate.overlap.tile}
 						</span>
 					</p>
 					{currentCandidate.blanks.length > 0 && (

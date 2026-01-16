@@ -1,6 +1,7 @@
 import type { Turn, Direction } from './utils';
 import type { TileBag } from './api/updateTileBag';
 import { findViablePlays } from './api/findViablePlays';
+import { scoreTurn } from './api/scoreTurn';
 import { styleWithBlanks } from './styleWithBlanks';
 import { canFormWord, canFormWordWithBlanks, getTilesString } from './utils';
 
@@ -11,7 +12,10 @@ export interface CandidatePlay {
 	col: number;
 	direction: Direction;
 	blanks: string[];
-	overlapTile: string;
+	overlap: {
+		tile: string;
+		index: number;
+	};
 	tileBag: TileBag;
 	tilesLeft: number;
 	score: number;
@@ -27,7 +31,7 @@ export interface CandidatePlay {
 export function cullWords(
 	words: string[],
 	tileBag: TileBag,
-	turnsCount: number
+	turnsCount: number,
 ): string[] {
 	const tilesString = getTilesString(tileBag);
 	return words.filter((word) => {
@@ -50,10 +54,10 @@ export function cullWords(
 export async function findNextViablePlay(
 	words: string[],
 	startIndex: number,
-	turns: Turn[]
+	turns: Turn[],
 ): Promise<{ candidates: CandidatePlay[]; nextIndex: number } | null> {
 	console.log(
-		`Starting search with ${words.length} words, starting from index ${startIndex}`
+		`Starting search with ${words.length} words, starting from index ${startIndex}`,
 	);
 	let index = startIndex;
 	while (index < words.length) {
@@ -72,7 +76,7 @@ export async function findNextViablePlay(
 			}
 			if (response.viablePlays && response.viablePlays.length > 0) {
 				console.log(
-					`Found ${response.viablePlays.length} viable plays for ${word}`
+					`Found ${response.viablePlays.length} viable plays for ${word}`,
 				);
 				const candidates: CandidatePlay[] = response.viablePlays.map(
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,16 +87,16 @@ export async function findNextViablePlay(
 						col: p.col,
 						direction: p.direction,
 						blanks: p.blanks || [],
-						overlapTile: p.overlapTile,
+						overlap: p.overlap,
 						tileBag: p.tileBag,
 						tilesLeft: p.tilesLeft,
 						score: 0,
-					})
+					}),
 				);
 				return { candidates, nextIndex: index + 1 };
 			}
 			console.log(
-				`No viable plays found for ${word}, but response was successful`
+				`No viable plays found for ${word}, but response was successful`,
 			);
 		} catch (err) {
 			console.error('Error finding viable plays for', word, ':', err);
@@ -111,17 +115,17 @@ export async function findNextViablePlay(
  * @param words - The current words list.
  * @returns An object with updated board, turns, and words, or null if error.
  */
-export function acceptCandidate(
+export async function acceptCandidate(
 	candidate: CandidatePlay,
 	board: string[][],
 	turns: Turn[],
 	words: string[],
-	eightLetterWords: string[]
-): {
+	eightLetterWords: string[],
+): Promise<{
 	board: string[][];
 	turns: Turn[];
 	words: string[];
-} | null {
+} | null> {
 	try {
 		const styledResult = styleWithBlanks(
 			board,
@@ -129,7 +133,7 @@ export function acceptCandidate(
 			candidate.row,
 			candidate.col,
 			candidate.direction,
-			candidate.blanks
+			candidate.blanks,
 		);
 
 		if (!styledResult) {
@@ -149,6 +153,7 @@ export function acceptCandidate(
 				blanks: styledResult.blanks,
 				tileBag: candidate.tileBag,
 				tilesLeft: candidate.tilesLeft,
+				overlap: candidate.overlap,
 			},
 		];
 
@@ -160,20 +165,34 @@ export function acceptCandidate(
 		let culledWords = cullWords(
 			wordsToCull,
 			candidate.tileBag,
-			newTurnsCount
+			newTurnsCount,
 		);
 		// Shuffle the culled list to randomize the order
 		culledWords = [...culledWords].sort(() => Math.random() - 0.5);
 
 		console.log('Remaining tiles:', getTilesString(candidate.tileBag));
 		console.log(
-			`Culled and shuffled words: ${wordsToCull.length} -> ${culledWords.length} for turn ${newTurnsCount}`
+			`Culled and shuffled words: ${wordsToCull.length} -> ${culledWords.length} for turn ${newTurnsCount}`,
 		);
 		console.log(
-			`Culled from ${wordsToCull === words ? 'current' : 'original'} list`
+			`Culled from ${wordsToCull === words ? 'current' : 'original'} list`,
 		);
 		if (newTurnsCount >= 12) {
 			console.log('Culled list (using blanks):', culledWords);
+		}
+
+		// Score the turn
+		try {
+			const scoreResponse = await scoreTurn(
+				JSON.stringify(newTurns[newTurns.length - 1]),
+			);
+			if (scoreResponse.success && scoreResponse.score !== undefined) {
+				newTurns[newTurns.length - 1].score = scoreResponse.score;
+			} else {
+				console.error('Failed to score turn:', scoreResponse.error);
+			}
+		} catch (err) {
+			console.error('Error scoring turn:', err);
 		}
 
 		return {
@@ -222,7 +241,7 @@ export function goToPreviousCandidate(currentIndex: number): number {
  */
 export function goToNextCandidate(
 	currentIndex: number,
-	candidatesLength: number
+	candidatesLength: number,
 ): number {
 	const next = currentIndex + 1;
 	return next >= candidatesLength ? candidatesLength - 1 : next;

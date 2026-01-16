@@ -8,6 +8,7 @@ import ResetBoard from './components/ResetBoard';
 import { BOARD_SIZE, INITIAL_TILEBAG } from './lib/gameSetup';
 import { styleWithBlanks } from './lib/styleWithBlanks';
 import { updateTileBag } from './lib/api/updateTileBag';
+import { scoreTurn } from './lib/api/scoreTurn';
 import { getTilesString } from './lib/utils';
 import type { Turn } from './lib/utils';
 
@@ -27,7 +28,7 @@ export default function App() {
 	const [board, setBoard] = useState<string[][]>(
 		Array(BOARD_SIZE)
 			.fill(null)
-			.map(() => Array(BOARD_SIZE).fill(''))
+			.map(() => Array(BOARD_SIZE).fill('')),
 	);
 
 	const [tileBag, setTileBag] =
@@ -51,7 +52,7 @@ export default function App() {
 				setStartSquareHandler(null);
 			};
 		},
-		[]
+		[],
 	);
 
 	const handleSquareSelected = useCallback(
@@ -59,7 +60,7 @@ export default function App() {
 			setSelectedRow(r);
 			setSelectedCol(c);
 		},
-		[]
+		[],
 	);
 
 	const handleBoardClick = (r: number, c: number) => {
@@ -86,15 +87,15 @@ export default function App() {
 								Tile Bag:{' '}
 								<span className="font-mono">
 									{getTilesString(
-										turns.length > 0
-											? turns[turns.length - 1].tileBag
-											: tileBag
+										turns.length > 0 ?
+											turns[turns.length - 1].tileBag
+										:	tileBag,
 									)}
 								</span>
 							</p>
 						</div>
 						<div className="mt-2 flex flex-col items-center space-y-8">
-							{isFirstTurnDone ? (
+							{isFirstTurnDone ?
 								<SubsequentTurnSelector
 									eightLetterWords={EIGHTS}
 									turns={turns}
@@ -102,9 +103,8 @@ export default function App() {
 									setBoard={setBoard}
 									setTurns={setTurns}
 								/>
-							) : (
-								<>
-									{!isPlacingOpening ? (
+							:	<>
+									{!isPlacingOpening ?
 										<button
 											onClick={() =>
 												setIsPlacingOpening(true)
@@ -113,21 +113,20 @@ export default function App() {
 										>
 											Random Opening Bingo
 										</button>
-									) : (
-										<OpeningBingoSelector
+									:	<OpeningBingoSelector
 											sevenLetterWords={SEVENS}
 											onPlace={async (
 												newBoard,
 												bingo,
 												row,
 												col,
-												direction
+												direction,
 											) => {
 												try {
 													const openingBingoTileBagResult =
 														await updateTileBag(
 															bingo,
-															tileBag
+															tileBag,
 														);
 													const styleWithBlanksResult =
 														styleWithBlanks(
@@ -136,44 +135,78 @@ export default function App() {
 															row,
 															col,
 															direction,
-															openingBingoTileBagResult.blanks
+															openingBingoTileBagResult.blanks,
 														);
 													if (
 														!styleWithBlanksResult
 													) {
 														alert(
-															'Error in blank styling!'
+															'Error in blank styling!',
 														);
 														return;
 													}
 													setTileBag(
-														openingBingoTileBagResult.tileBag
+														openingBingoTileBagResult.tileBag,
 													);
 													setBoard(
-														styleWithBlanksResult.board
+														styleWithBlanksResult.board,
 													);
-													setTurns((t) => [
-														...t,
-														{
-															id: t.length + 1,
-															bingo,
-															row,
-															col,
-															direction,
-															blanks: styleWithBlanksResult.blanks,
-															tileBag:
+													const newTurn = {
+														id: turns.length + 1,
+														bingo,
+														row,
+														col,
+														direction,
+														blanks: styleWithBlanksResult.blanks,
+														tileBag:
+															openingBingoTileBagResult.tileBag,
+														tilesLeft:
+															Object.values(
 																openingBingoTileBagResult.tileBag,
-															tilesLeft:
-																Object.values(
-																	openingBingoTileBagResult.tileBag
-																).reduce(
-																	(a, b) =>
-																		a + b,
-																	0
+															).reduce(
+																(a, b) => a + b,
+																0,
+															),
+														score: 0,
+														overlap: null,
+													};
+													// Score the opening turn
+													try {
+														const scoreResponse =
+															await scoreTurn(
+																JSON.stringify(
+																	newTurn,
 																),
-															score: 0,
-														},
-													]);
+															);
+														if (
+															scoreResponse.success &&
+															scoreResponse.score !==
+																undefined
+														) {
+															newTurn.score =
+																scoreResponse.score;
+														} else {
+															console.error(
+																'Failed to score opening turn:',
+																scoreResponse.error,
+															);
+														}
+													} catch (err) {
+														console.error(
+															'Error scoring opening turn:',
+															err,
+														);
+													}
+													const newTurns = [
+														...turns,
+														newTurn,
+													];
+													setTurns(newTurns);
+													console.log(
+														JSON.stringify(
+															newTurns,
+														),
+													);
 												} catch (err) {
 													console.error(err);
 													alert('API Failure!');
@@ -196,9 +229,9 @@ export default function App() {
 												handleStartSquareSelected
 											}
 										/>
-									)}
+									}
 								</>
-							)}
+							}
 
 							<ResetBoard
 								onClear={() => {
@@ -206,8 +239,8 @@ export default function App() {
 										Array(BOARD_SIZE)
 											.fill(null)
 											.map(() =>
-												Array(BOARD_SIZE).fill('')
-											)
+												Array(BOARD_SIZE).fill(''),
+											),
 									);
 									setTurns([]);
 									setTileBag(INITIAL_TILEBAG);
@@ -225,36 +258,109 @@ export default function App() {
 					</div>
 
 					{/* SIDEBAR */}
-					<div className="w-72 bg-white rounded-xl shadow-xl p-4 text-left">
+					<div className="w-96 bg-white rounded-xl shadow-xl p-4 text-left">
 						<h2 className="text-xl font-bold mb-4 text-green-900">
-							Turns
+							Scoreboard
 						</h2>
 
-						{turns.length === 0 && (
-							<p className="text-gray-500">No Turns</p>
-						)}
-
-						<ul className="space-y-1">
-							{turns.map((m, i) => {
-								const blanksText =
-									m.blanks.length > 0
-										? `, Blanks: ${m.blanks}`
-										: '';
-								return (
-									<li
-										key={i}
-										className="text-sm text-gray-600 bg-gray-50 px-2 py-1 rounded"
-									>
-										<strong className="text-red-700">
-											Turn {m.id}:
-										</strong>{' '}
-										{m.bingo}, Row {m.row + 1}, Col{' '}
-										{m.col + 1}, Dir: {m.direction}
-										{blanksText}
-									</li>
-								);
-							})}
-						</ul>
+						<div className="grid grid-cols-2 gap-4">
+							<div>
+								<h3 className="text-lg font-bold mb-2 text-green-900">
+									Player A
+								</h3>
+								{(
+									turns.filter((m) => m.id % 2 === 1)
+										.length === 0
+								) ?
+									<p className="text-gray-500">No Turns</p>
+								:	<ul className="space-y-1">
+										{turns
+											.filter((m) => m.id % 2 === 1)
+											.map((m, i) => {
+												const blanksText =
+													m.blanks.length > 0 ?
+														m.blanks
+													:	'';
+												return (
+													<li
+														key={i}
+														className="text-sm text-gray-600 bg-gray-50 px-2 py-1 rounded"
+													>
+														<div>{m.bingo}</div>
+														<div>
+															Row: {m.row + 1},
+															Col:{' '}
+															{String.fromCharCode(
+																65 + m.col,
+															)}
+														</div>
+														<div>
+															Dir: {m.direction}
+														</div>
+														{blanksText && (
+															<div>
+																Blanks:{' '}
+																{blanksText}
+															</div>
+														)}
+														<div>
+															Score: {m.score}
+														</div>
+													</li>
+												);
+											})}
+									</ul>
+								}
+							</div>
+							<div>
+								<h3 className="text-lg font-bold mb-2 text-green-900">
+									Player B
+								</h3>
+								{(
+									turns.filter((m) => m.id % 2 === 0)
+										.length === 0
+								) ?
+									<p className="text-gray-500">No Turns</p>
+								:	<ul className="space-y-1">
+										{turns
+											.filter((m) => m.id % 2 === 0)
+											.map((m, i) => {
+												const blanksText =
+													m.blanks.length > 0 ?
+														m.blanks
+													:	'';
+												return (
+													<li
+														key={i}
+														className="text-sm text-gray-600 bg-gray-50 px-2 py-1 rounded"
+													>
+														<div>{m.bingo}</div>
+														<div>
+															Row: {m.row + 1},
+															Col:{' '}
+															{String.fromCharCode(
+																65 + m.col,
+															)}
+														</div>
+														<div>
+															Dir: {m.direction}
+														</div>
+														{blanksText && (
+															<div>
+																Blanks:{' '}
+																{blanksText}
+															</div>
+														)}
+														<div>
+															Score: {m.score}
+														</div>
+													</li>
+												);
+											})}
+									</ul>
+								}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -27,7 +27,7 @@ export default function SubsequentTurnSelector({
 	onCancel,
 }: Props) {
 	const [words, setWords] = useState<string[]>(() =>
-		[...eightLetterWords].sort(() => Math.random() - 0.5)
+		[...eightLetterWords].sort(() => Math.random() - 0.5),
 	);
 	const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
@@ -42,13 +42,13 @@ export default function SubsequentTurnSelector({
 			'findNextViablePlay called, words.length:',
 			words.length,
 			'currentWordIndex:',
-			currentWordIndex
+			currentWordIndex,
 		);
 		setIsSearching(true);
 		const result = await findNextViablePlayUtil(
 			words,
 			currentWordIndex,
-			turns
+			turns,
 		);
 		if (result) {
 			setCandidates(result.candidates);
@@ -92,13 +92,20 @@ export default function SubsequentTurnSelector({
 	}, [candidates.length, isSearching, turns.length, noMoreFound]);
 
 	const acceptCandidate = async (candidate: CandidatePlay) => {
-		const result = acceptCandidateUtil(candidate, board, turns, words, eightLetterWords);
+		const result = await acceptCandidateUtil(
+			candidate,
+			board,
+			turns,
+			words,
+			eightLetterWords,
+		);
 		if (!result) {
 			alert('Error applying word to board!');
 			return;
 		}
 		setBoard(result.board);
 		setTurns(result.turns);
+		console.log(JSON.stringify(result.turns));
 		setWords(result.words);
 		// Reset for next search
 		setCandidates([]);
@@ -116,13 +123,13 @@ export default function SubsequentTurnSelector({
 
 	const goToPreviousCandidate = () => {
 		setCurrentCandidateIndex(
-			goToPreviousCandidateUtil(currentCandidateIndex)
+			goToPreviousCandidateUtil(currentCandidateIndex),
 		);
 	};
 
 	const goToNextCandidate = () => {
 		setCurrentCandidateIndex(
-			goToNextCandidateUtil(currentCandidateIndex, candidates.length)
+			goToNextCandidateUtil(currentCandidateIndex, candidates.length),
 		);
 	};
 

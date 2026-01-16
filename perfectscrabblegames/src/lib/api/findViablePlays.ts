@@ -6,7 +6,10 @@ export interface ViablePlay {
 	row: number;
 	col: number;
 	direction: 'H' | 'V';
-	overlapTile: string;
+	overlap: {
+		tile: string;
+		index: number;
+	} | null;
 	tileBag: Record<string, number>;
 	tilesLeft: number;
 	blanks: string[];
