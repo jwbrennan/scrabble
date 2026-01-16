@@ -8,6 +8,9 @@ GU`SetUsage[ScrabbleHelper,
 GU`SetUsage[ScrabbleBingo,
 	"Takes a 7-letter string that may contain blanks (?) and a dictionary list, and returns all possible 7-letter bingos that can be formed with the tiles on the rack."
 ];
+GU`SetUsage[board,
+	"Matrix of squares and their types on a standard Scrabble board."
+];
 GU`SetUsage[CreateInitialScrabbleBoard,
 	"Create graphic of an empty Scrabble board."
 ];
@@ -63,6 +66,12 @@ GU`SetUsage[CanFormWord,
 ];
 GU`SetUsage[CullBingoList,
 	"Cull the list of possible bingos based on the tiles remaining."
+];
+GU`SetUsage[ScoreTurn,
+	"Calculate the score of a given turn."
+];
+GU`SetUsage[ScoringBonus,
+	"Apply letter and word multipliers to calculate the total score of a turn."
 ];
 
 EndPackage[]

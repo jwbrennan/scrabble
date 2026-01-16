@@ -105,7 +105,11 @@ Module[
 				];
 				Table[
 					<|
-						"bingo" -> bingo, "row" -> pos[[1]], "col" -> pos[[2]], "direction" -> "V", "playThroughTurn" -> id, "overlapTile" -> #
+						"bingo" -> bingo, "row" -> pos[[1]], "col" -> pos[[2]], "direction" -> "V", "playThroughTurn" -> id, 
+						"overlap" -> 
+						<|
+							"tile" -> #, "index" -> First[retrace] + 1
+						|>
 					|>,
 					{pos, startingPosList}
 				]
@@ -136,7 +140,11 @@ Module[
 				];
 				Table[
 					<|
-						"bingo" -> bingo, "row" -> pos[[1]], "col" -> pos[[2]], "direction" -> "H", "playThroughTurn" -> id, "overlapTile" -> #
+						"bingo" -> bingo, "row" -> pos[[1]], "col" -> pos[[2]], "direction" -> "H", "playThroughTurn" -> id, 
+						"overlap" -> 
+						<|
+							"tile" -> #, "index" -> First[retrace] + 1
+						|>
 					|>,
 					{pos, startingPosList}
 				]
@@ -147,7 +155,7 @@ Module[
 	]
 ];
 
-(* For every turn in 'turns' I need the bingo, col, row, direction. *)
+(* For every turn in 'turns' I need the bingo, col, row, direction, and overlap info. *)
 FindViablePlays[bingo_String, turns_List, currentTileBag_Association] :=
 Module[
 	{
@@ -184,7 +192,7 @@ Module[
 		Join[
 			#,
 			With[
-				{possibleBingo = #["bingo"], overlapTile = #["overlapTile"]},
+				{possibleBingo = #["bingo"], overlapTile = #["overlap", "tile"]},
 				{
 					response =
 					Enclose[
@@ -298,6 +306,95 @@ If[
 		]
 	]
 ];
+
+ScoringBonus[scoringInfo_List] :=
+Module[
+	{letterMultiply, totalLetterScore, wordMultipliers, wordMultiply},
+	letterMultiply =
+	Map[
+		With[
+			{points = #["points"], bonus = #["bonus"]},
+			Switch[
+				bonus,
+				"DL", points * 2,
+				"TL", points * 3,
+				_, points
+			]
+		] &,
+		scoringInfo
+	];
+	totalLetterScore = Total[letterMultiply];
+	wordMultipliers = Cases[scoringInfo[[All, "bonus"]], "DW" | "TW"];
+	wordMultiply =
+	Fold[
+		Switch[
+			#2,
+			"DW", #1 * 2,
+			"TW", #1 * 3,
+			_, #1
+		] &,
+		totalLetterScore,
+		wordMultipliers
+	];
+	wordMultiply + 50	(* 50 point bingo bonus *)
+];
+
+ScoreTurn[turn_Association] :=
+Module[
+	{	
+		word = turn["bingo"], row = turn["row"], col = turn["col"],
+		scoringInfo, score
+	},
+	scoringInfo = 
+	Which[
+		turn["direction"] === "H",
+		MapIndexed[
+			<|
+				"tile" -> #1,
+				"points" -> tiles[#1]["Points"],
+				"bonus" -> board[[row + 1, col + First[#2]]]
+			|> &,
+			Characters[word]
+		],
+		turn["direction"] === "V",
+		MapIndexed[
+			<|
+				"tile" -> #1,
+				"points" -> tiles[#1]["Points"],
+				"bonus" -> board[[row + First[#2], col + 1]]
+			|> &,
+			Characters[word]
+		]
+	];
+	If[
+		turn["overlap"] =!= Null,
+		scoringInfo = ReplacePart[scoringInfo, {turn["overlap", "index"], "bonus"} -> "SL"],
+		Nothing
+	];
+	score = 
+	Enclose[
+		ConfirmMatch[
+			ScoringBonus[scoringInfo],
+			_Integer
+		]
+	];
+	Return[
+		If[
+			FailureQ[score],
+			{
+				"success" -> False,
+				"error" -> "SCORING-ERROR"
+			},
+			{
+				"success" -> True,
+				"score" -> score
+			}
+		]
+	]
+];
+
+
+
 End[]
 
 EndPackage[]
