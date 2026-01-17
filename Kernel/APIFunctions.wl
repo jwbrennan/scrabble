@@ -5,9 +5,10 @@ Begin["`APIFunctions`Private`"]
 UpdateTileBag[tileBag_Association, bingo_String, blanksRemaining_Integer]:=
 Module[
 	{
-		tilesInBingo = Characters[bingo], charCounts, newTileBag, blanksNeeded
+		tilesInBingo = Characters[bingo], charCounts, newTileBag, blanksNeeded,
+		blankTile, blankIndices
 	},
-	charCounts=Counts[tilesInBingo];
+	charCounts = Counts[tilesInBingo];
 	newTileBag=
 	Merge[
 		{
@@ -25,16 +26,33 @@ Module[
 			]
 		]
 	];
-	If[
-		blanksNeeded <= blanksRemaining && Min[Values[newTileBag]] >= -blanksRemaining,
+	Which[
+		blanksNeeded == 0,
+		Return[
+			{
+				"success" -> True,
+				"tileBag" -> Normal[newTileBag],
+				"blanks" -> Null
+			}
+		],
+		blanksNeeded =!= 0 && blanksNeeded <= blanksRemaining && Min[Values[newTileBag]] >= -blanksRemaining,
 		newTileBag["?"] = newTileBag["?"] - blanksNeeded;
+		blankTile = First[Flatten[KeyValueMap[Table[#1, -#2] &, Select[newTileBag, # < 0 &]]]];
+		blankIndices = Position[tilesInBingo, blankTile][[All, 1]];
 		Return[
 			{
 				"success" -> True,
 				"tileBag" -> Normal[newTileBag] /. x_Integer /; x < 0 :> 0,
-				"blanks" -> Flatten[KeyValueMap[Table[#1, -#2] &, Select[newTileBag, # < 0 &]]]
+				"blanks" -> 
+				Normal[
+					<|
+					"tile" -> blankTile,
+					"indices" -> blankIndices
+					|>
+				]
 			}
 		],
+		True,
 		Return[
 			{
 				"success" -> False,
@@ -207,7 +225,7 @@ Module[
 									blanksIntervene
 								]
 							],
-							{"success" -> True, "tileBag" -> _List, "blanks" -> _List}
+							{"success" -> True, "tileBag" -> _List, "blanks" -> _List | Null}
 						]
 					]
 				},
@@ -343,15 +361,24 @@ ScoreTurn[turn_Association] :=
 Module[
 	{	
 		word = turn["bingo"], row = turn["row"], col = turn["col"],
-		scoringInfo, score
+		scoringInfo, score, blanksIndices
 	},
+	blanksIndices = 
+	Which[
+		turn["blanks"] === Null, 
+		{},
+		MemberQ[turn["blanks", "indices"], turn["overlap", "index"]],
+		DeleteElements[turn["blanks", "indices"], 1 -> {turn["overlap", "index"]}],
+		True,
+		turn["blanks", "indices"]
+	];
 	scoringInfo = 
 	Which[
 		turn["direction"] === "H",
 		MapIndexed[
 			<|
 				"tile" -> #1,
-				"points" -> tiles[#1]["Points"],
+				"points" -> If[MemberQ[blanksIndices, First[#2]], 0, tiles[#1]["Points"]],
 				"bonus" -> board[[row + 1, col + First[#2]]]
 			|> &,
 			Characters[word]
@@ -360,7 +387,7 @@ Module[
 		MapIndexed[
 			<|
 				"tile" -> #1,
-				"points" -> tiles[#1]["Points"],
+				"points" -> If[MemberQ[blanksIndices, First[#2]], 0, tiles[#1]["Points"]],
 				"bonus" -> board[[row + First[#2], col + 1]]
 			|> &,
 			Characters[word]
