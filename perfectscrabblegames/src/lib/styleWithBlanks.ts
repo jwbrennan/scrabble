@@ -1,7 +1,10 @@
 // Styling a turn after tiles are played with blanks represented as "?".
 export type PlaceBingoResult = {
 	board: string[][];
-	blanks: string[];
+	blanks: {
+		tile: string;
+		indices: number[];
+	} | null;
 };
 
 export function styleWithBlanks(
@@ -10,32 +13,31 @@ export function styleWithBlanks(
 	row: number,
 	col: number,
 	direction: 'H' | 'V',
-	blanks: string[]
+	blanks: {
+		tile: string;
+		indices: number[];
+	} | null,
 ): PlaceBingoResult | null {
 	const letters = bingo.toUpperCase().split('');
 	const newBoard = board.map((r) => [...r]);
 
-	// 2. Randomly assign those blanks on the board
-	const blankPositions = new Set<number>();
-
-	for (const letter of blanks) {
-		const candidates: number[] = [];
-		letters.forEach((l, i) => {
-			if (l === letter && !blankPositions.has(i)) candidates.push(i);
-		});
-
-		if (candidates.length === 0) continue; // safety
-
-		const chosen =
-			candidates[Math.floor(Math.random() * candidates.length)];
-		blankPositions.add(chosen);
+	// Determine which index to style as blank
+	let blankIndex: number | null = null;
+	if (blanks) {
+		if (blanks.indices.length === 1) {
+			blankIndex = blanks.indices[0];
+		} else {
+			// Randomly choose one index to style as blank
+			blankIndex = blanks.indices[Math.floor(Math.random() * blanks.indices.length)];
+		}
 	}
 
-	// 3. Write "?" where blanks were used
+	// Place "?" at the chosen index (1-based)
 	let r = row;
 	let c = col;
 	letters.forEach((letter, i) => {
-		newBoard[r][c] = blankPositions.has(i) ? '?' : letter;
+		const isBlank = blankIndex === i + 1;
+		newBoard[r][c] = isBlank ? '?' : letter;
 		if (direction === 'H') c++;
 		else r++;
 	});

@@ -12,7 +12,10 @@ export interface ViablePlay {
 	} | null;
 	tileBag: Record<string, number>;
 	tilesLeft: number;
-	blanks: string[];
+	blanks: {
+		tile: string;
+		indices: number[];
+	} | null;
 }
 
 export interface FindViablePlaysResponse {

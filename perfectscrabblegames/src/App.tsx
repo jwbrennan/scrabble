@@ -127,6 +127,7 @@ export default function App() {
 														await updateTileBag(
 															bingo,
 															tileBag,
+															0, // Force blanksRemaining to 0 for opening turn
 														);
 													const styleWithBlanksResult =
 														styleWithBlanks(
@@ -252,7 +253,7 @@ export default function App() {
 								}}
 							/>
 							<footer className="mt-20 text-gray-600 text-sm">
-								Perfect Scrabble Games • Joseph Brennan 2025
+								Perfect Scrabble Games • Joseph Brennan 2026
 							</footer>
 						</div>
 					</div>
@@ -277,10 +278,6 @@ export default function App() {
 										{turns
 											.filter((m) => m.id % 2 === 1)
 											.map((m, i) => {
-												const blanksText =
-													m.blanks.length > 0 ?
-														m.blanks
-													:	'';
 												return (
 													<li
 														key={i}
@@ -297,10 +294,10 @@ export default function App() {
 														<div>
 															Dir: {m.direction}
 														</div>
-														{blanksText && (
+														{m.blanks && (
 															<div>
 																Blanks:{' '}
-																{blanksText}
+																{m.blanks.tile}
 															</div>
 														)}
 														<div>
@@ -325,10 +322,6 @@ export default function App() {
 										{turns
 											.filter((m) => m.id % 2 === 0)
 											.map((m, i) => {
-												const blanksText =
-													m.blanks.length > 0 ?
-														m.blanks
-													:	'';
 												return (
 													<li
 														key={i}
@@ -345,10 +338,10 @@ export default function App() {
 														<div>
 															Dir: {m.direction}
 														</div>
-														{blanksText && (
+														{m.blanks && (
 															<div>
 																Blanks:{' '}
-																{blanksText}
+																{m.blanks.tile}
 															</div>
 														)}
 														<div>

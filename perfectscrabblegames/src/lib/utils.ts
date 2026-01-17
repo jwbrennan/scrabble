@@ -5,7 +5,10 @@ export interface Turn {
 	row: number;
 	col: number;
 	direction: Direction;
-	blanks: string[];
+	blanks: {
+		tile: string;
+		indices: number[];
+	} | null;
 	tileBag: Record<string, number>;
 	tilesLeft: number;
 	score: number;
@@ -82,7 +85,7 @@ export function canFormWord(tilesString: string, word: string): boolean {
  */
 export function canFormWordWithBlanks(
 	tilesString: string,
-	word: string
+	word: string,
 ): boolean {
 	const tileCounts: Record<string, number> = {};
 	for (const char of tilesString.toUpperCase()) {

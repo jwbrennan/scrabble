@@ -4,17 +4,21 @@ export type TileBag = Record<string, number>;
 export interface UpdateTileBagResponse {
 	success: boolean;
 	tileBag: TileBag;
-	blanks: string[];
+	blanks: {
+		tile: string;
+		indices: number[];
+	} | null;
 }
 
 export async function updateTileBag(
 	bingo: string,
-	currentTileBag: TileBag
+	currentTileBag: TileBag,
+	blanksRemaining: number
 ): Promise<UpdateTileBagResponse> {
 	const params = new URLSearchParams({
 		bingo: bingo.toUpperCase(),
 		tileBag: JSON.stringify(currentTileBag),
-		blanksRemaining: String(currentTileBag['?'] ?? 0),
+		blanksRemaining: String(blanksRemaining),
 	});
 
 	const response = await fetch(

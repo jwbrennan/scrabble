@@ -80,10 +80,9 @@ export default function CandidatePlayDisplay({
 							{currentCandidate.overlap.tile}
 						</span>
 					</p>
-					{currentCandidate.blanks.length > 0 && (
+					{currentCandidate.blanks && (
 						<p className="text-md text-amber-700">
-							Uses {currentCandidate.blanks.length} blank(s) as:{' '}
-							{currentCandidate.blanks.join(', ')}
+							Uses {currentCandidate.blanks.indices.length} blank(s) as {currentCandidate.blanks.tile}
 						</p>
 					)}
 				</div>

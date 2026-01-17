@@ -11,7 +11,10 @@ export interface CandidatePlay {
 	row: number;
 	col: number;
 	direction: Direction;
-	blanks: string[];
+	blanks: {
+		tile: string;
+		indices: number[];
+	} | null;
 	overlap: {
 		tile: string;
 		index: number;
@@ -86,7 +89,7 @@ export async function findNextViablePlay(
 						row: p.row,
 						col: p.col,
 						direction: p.direction,
-						blanks: p.blanks || [],
+						blanks: p.blanks,
 						overlap: p.overlap,
 						tileBag: p.tileBag,
 						tilesLeft: p.tilesLeft,
