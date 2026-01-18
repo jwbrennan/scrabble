@@ -35,13 +35,10 @@ export default function App() {
 		useState<Record<string, number>>(INITIAL_TILEBAG);
 
 	const [isPlacingOpening, setIsPlacingOpening] = useState(false);
-
 	const [isFirstTurnDone, setIsFirstTurnDone] = useState(false);
-
 	const [startSquareHandler, setStartSquareHandler] = useState<
 		((r: number, c: number) => void) | null
 	>(null);
-
 	const [selectedRow, setSelectedRow] = useState<number | null>(null);
 	const [selectedCol, setSelectedCol] = useState<number | null>(null);
 
@@ -70,11 +67,11 @@ export default function App() {
 	const [turns, setTurns] = useState<Turn[]>([]);
 
 	return (
-		<div className="min-h-screen bg-gray-50 py-8 px-4">
-			<div className="bg-white p-8 rounded-lg shadow-2xl mx-auto text-center">
-				<div className="flex justify-center gap-12 items-start w-full">
+		<div className="min-h-screen bg-gray-50 py-4 px-4">
+			<div className="bg-white p-4 rounded-lg shadow-2xl mx-auto text-center">
+				<div className="flex justify-center gap-8 items-start w-full">
 					<div className="flex flex-col items-center">
-						<div className="bg-green-900 p-4 rounded-lg shadow-2xl max-w-2xl">
+						<div className="bg-green-900 p-2 rounded-lg shadow-2xl max-w-xl">
 							<Board
 								board={board}
 								onTileClick={handleBoardClick}
@@ -82,157 +79,162 @@ export default function App() {
 								selectedCol={selectedCol}
 							/>
 						</div>
-						<div className="mt-4 text-center">
-							<p className="text-xl font-semibold max-w-lg mx-auto break-words">
-								Tile Bag:{' '}
-								<span className="font-mono">
-									{getTilesString(
-										turns.length > 0 ?
-											turns[turns.length - 1].tileBag
-										:	tileBag,
-									)}
-								</span>
-							</p>
-						</div>
-						<div className="mt-2 flex flex-col items-center space-y-8">
-							{isFirstTurnDone ?
-								<SubsequentTurnSelector
-									eightLetterWords={EIGHTS}
-									turns={turns}
-									board={board}
-									setBoard={setBoard}
-									setTurns={setTurns}
-								/>
-							:	<>
-									{!isPlacingOpening ?
-										<button
-											onClick={() =>
-												setIsPlacingOpening(true)
-											}
-											className="px-12 py-5 bg-red-600 hover:bg-red-700 text-white text-2xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
-										>
-											Random Opening Bingo
-										</button>
-									:	<OpeningBingoSelector
-											sevenLetterWords={SEVENS}
-											onPlace={async (
-												newBoard,
-												bingo,
-												row,
-												col,
-												direction,
-											) => {
-												try {
-													const openingBingoTileBagResult =
-														await updateTileBag(
-															bingo,
-															tileBag,
-															0, // Force blanksRemaining to 0 for opening turn
+						<div
+							className={`mt-2 flex items-center justify-between h-[16rem] relative ${isFirstTurnDone || isPlacingOpening ? 'w-[44rem]' : 'w-[30rem]'}`}
+						>
+							<div className="flex flex-col items-center">
+								{isFirstTurnDone ?
+									<SubsequentTurnSelector
+										eightLetterWords={EIGHTS}
+										turns={turns}
+										board={board}
+										setBoard={setBoard}
+										setTurns={setTurns}
+									/>
+								:	<>
+										{!isPlacingOpening ?
+											<button
+												onClick={() =>
+													setIsPlacingOpening(true)
+												}
+												className="px-12 py-4 bg-red-600 hover:bg-red-700 text-white text-2xl font-bold rounded-full shadow-xl transform hover:scale-105 transition"
+											>
+												Random Opening
+												<br />
+												Bingo
+											</button>
+										:	<OpeningBingoSelector
+												sevenLetterWords={SEVENS}
+												onPlace={async (
+													newBoard,
+													bingo,
+													row,
+													col,
+													direction,
+												) => {
+													try {
+														const openingBingoTileBagResult =
+															await updateTileBag(
+																bingo,
+																tileBag,
+																0, // Force blanksRemaining to 0 for opening turn
+															);
+														const styleWithBlanksResult =
+															styleWithBlanks(
+																newBoard,
+																bingo,
+																row,
+																col,
+																direction,
+																openingBingoTileBagResult.blanks,
+															);
+														if (
+															!styleWithBlanksResult
+														) {
+															alert(
+																'Error in blank styling!',
+															);
+															return;
+														}
+														setTileBag(
+															openingBingoTileBagResult.tileBag,
 														);
-													const styleWithBlanksResult =
-														styleWithBlanks(
-															newBoard,
+														setBoard(
+															styleWithBlanksResult.board,
+														);
+														const newTurn = {
+															id:
+																turns.length +
+																1,
 															bingo,
 															row,
 															col,
 															direction,
-															openingBingoTileBagResult.blanks,
-														);
-													if (
-														!styleWithBlanksResult
-													) {
-														alert(
-															'Error in blank styling!',
-														);
-														return;
-													}
-													setTileBag(
-														openingBingoTileBagResult.tileBag,
-													);
-													setBoard(
-														styleWithBlanksResult.board,
-													);
-													const newTurn = {
-														id: turns.length + 1,
-														bingo,
-														row,
-														col,
-														direction,
-														blanks: styleWithBlanksResult.blanks,
-														tileBag:
-															openingBingoTileBagResult.tileBag,
-														tilesLeft:
-															Object.values(
+															blanks: styleWithBlanksResult.blanks,
+															tileBag:
 																openingBingoTileBagResult.tileBag,
-															).reduce(
-																(a, b) => a + b,
-																0,
-															),
-														score: 0,
-														overlap: null,
-													};
-													// Score the opening turn
-													try {
-														const scoreResponse =
-															await scoreTurn(
-																JSON.stringify(
-																	newTurn,
+															tilesLeft:
+																Object.values(
+																	openingBingoTileBagResult.tileBag,
+																).reduce(
+																	(a, b) =>
+																		a + b,
+																	0,
 																),
-															);
-														if (
-															scoreResponse.success &&
-															scoreResponse.score !==
-																undefined
-														) {
-															newTurn.score =
-																scoreResponse.score;
-														} else {
+															score: 0,
+															overlap: null,
+														};
+														// Score the opening turn
+														try {
+															const scoreResponse =
+																await scoreTurn(
+																	JSON.stringify(
+																		newTurn,
+																	),
+																);
+															if (
+																scoreResponse.success &&
+																scoreResponse.score !==
+																	undefined
+															) {
+																newTurn.score =
+																	scoreResponse.score;
+															} else {
+																console.error(
+																	'Failed to score opening turn:',
+																	scoreResponse.error,
+																);
+															}
+														} catch (err) {
 															console.error(
-																'Failed to score opening turn:',
-																scoreResponse.error,
+																'Error scoring opening turn:',
+																err,
 															);
 														}
-													} catch (err) {
-														console.error(
-															'Error scoring opening turn:',
-															err,
+														const newTurns = [
+															...turns,
+															newTurn,
+														];
+														setTurns(newTurns);
+														console.log(
+															JSON.stringify(
+																newTurns,
+															),
 														);
+													} catch (err) {
+														console.error(err);
+														if (
+															err instanceof
+																Error &&
+															err.message ===
+																'CANNOT-FORM-WORD'
+														) {
+															alert(
+																'This word requires a blank tile. Please choose a new bingo.',
+															);
+														} else {
+															alert(
+																'API Failure!',
+															);
+														}
+														return;
 													}
-													const newTurns = [
-														...turns,
-														newTurn,
-													];
-													setTurns(newTurns);
-													console.log(
-														JSON.stringify(
-															newTurns,
-														),
-													);
-												} catch (err) {
-													console.error(err);
-													alert('API Failure!');
-													return;
+													setIsPlacingOpening(false);
+													setIsFirstTurnDone(true);
+													setSelectedRow(null);
+													setSelectedCol(null);
+												}}
+												onSquareSelected={
+													handleSquareSelected
 												}
-												setIsPlacingOpening(false);
-												setIsFirstTurnDone(true);
-												setSelectedRow(null);
-												setSelectedCol(null);
-											}}
-											onCancel={() => {
-												setIsPlacingOpening(false);
-												setSelectedRow(null);
-												setSelectedCol(null);
-											}}
-											onSquareSelected={
-												handleSquareSelected
-											}
-											onStartSquareSelected={
-												handleStartSquareSelected
-											}
-										/>
-									}
-								</>
-							}
+												onStartSquareSelected={
+													handleStartSquareSelected
+												}
+											/>
+										}
+									</>
+								}
+							</div>
 
 							<ResetBoard
 								onClear={() => {
@@ -252,14 +254,12 @@ export default function App() {
 									console.clear();
 								}}
 							/>
-							<footer className="mt-20 text-gray-600 text-sm">
-								Perfect Scrabble Games • Joseph Brennan 2026
-							</footer>
 						</div>
+						<footer className="mt-8 text-gray-600 text-sm">
+							Perfect Scrabble Games • Joseph Brennan 2026
+						</footer>
 					</div>
-
-					{/* SIDEBAR */}
-					<div className="w-96 bg-white rounded-xl shadow-xl p-4 text-left">
+					<div className="w-96 bg-white rounded-xl shadow-xl p-2 text-left">
 						<h2 className="text-xl font-bold mb-4 text-green-900">
 							Scoreboard
 						</h2>
@@ -308,6 +308,12 @@ export default function App() {
 											})}
 									</ul>
 								}
+								<div className="mt-4 text-lg font-bold text-green-900">
+									Total:{' '}
+									{turns
+										.filter((m) => m.id % 2 === 1)
+										.reduce((sum, m) => sum + m.score, 0)}
+								</div>
 							</div>
 							<div>
 								<h3 className="text-lg font-bold mb-2 text-green-900">
@@ -352,7 +358,25 @@ export default function App() {
 											})}
 									</ul>
 								}
+								<div className="mt-4 text-lg font-bold text-green-900">
+									Total:{' '}
+									{turns
+										.filter((m) => m.id % 2 === 0)
+										.reduce((sum, m) => sum + m.score, 0)}
+								</div>
 							</div>
+						</div>
+						<div className="mt-4 text-left">
+							<p className="text-lg font-semibold break-words">
+								Tile Bag:{' '}
+								<span className="font-mono">
+									{getTilesString(
+										turns.length > 0 ?
+											turns[turns.length - 1].tileBag
+										:	tileBag,
+									)}
+								</span>
+							</p>
 						</div>
 					</div>
 				</div>

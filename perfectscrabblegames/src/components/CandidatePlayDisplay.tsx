@@ -50,76 +50,58 @@ export default function CandidatePlayDisplay({
 	const currentCandidate = candidates[currentCandidateIndex];
 
 	return (
-		<div className="bg-white rounded-2xl shadow-2xl p-8 mt-12 max-w-4xl mx-auto space-y-8">
-			<div className="text-center space-y-4">
-				<h2 className="text-3xl font-bold text-gray-800">
-					{currentCandidate.bingo}
-				</h2>
-				<div className="flex justify-center gap-5 flex-wrap">
+		<div className="bg-white rounded-2xl shadow-2xl p-6 mt-4 max-w-4xl mx-auto space-y-4">
+			<div className="text-center space-y-3">
+				<div className="flex justify-center gap-3 flex-wrap">
 					{currentCandidate.bingo.split('').map((l, i) => (
 						<div
 							key={i}
-							className="relative w-16 h-16 bg-amber-100 border-2 border-amber-600 rounded-lg shadow-xl flex items-center justify-center"
+							className="relative w-12 h-12 bg-amber-100 border-2 border-amber-600 rounded-lg shadow-xl flex items-center justify-center"
 						>
-							<span className="text-2xl font-bold">{l}</span>
+							<span className="text-xl font-bold">{l}</span>
 							<span className="absolute bottom-1 right-1 text-xs font-bold">
 								{LETTER_POINTS[l] || 0}
 							</span>
 						</div>
 					))}
 				</div>
-
-				<div className="text-center space-y-2 bg-blue-50 p-6 rounded-lg">
-					<p className="text-2xl font-semibold text-gray-700">
-						Option {currentCandidateIndex + 1} of{' '}
-						{candidates.length}
-					</p>
-					<p className="text-lg text-gray-600">
-						Overlaps on:{' '}
-						<span className="font-bold">
-							{currentCandidate.overlap.tile}
-						</span>
-					</p>
-					{currentCandidate.blanks && (
-						<p className="text-md text-amber-700">
-							Uses {currentCandidate.blanks.indices.length} blank(s) as {currentCandidate.blanks.tile}
-						</p>
-					)}
-				</div>
 			</div>
 
-			<div className="space-y-4">
+			<div className="space-y-3">
 				{/* Navigation buttons */}
-				<div className="flex justify-center gap-4">
+				<div className="flex justify-center gap-3 items-center">
 					<button
 						onClick={onPrevious}
 						disabled={currentCandidateIndex === 0}
-						className="px-6 py-3 bg-gray-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+						className="px-4 py-2 bg-gray-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						Previous
 					</button>
+					<span className="text-sm text-gray-600">
+						{currentCandidateIndex + 1} / {candidates.length}
+					</span>
 					<button
 						onClick={onNext}
 						disabled={
 							currentCandidateIndex === candidates.length - 1
 						}
-						className="px-6 py-3 bg-gray-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+						className="px-4 py-2 bg-gray-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						Next
 					</button>
 				</div>
 
 				{/* Action buttons */}
-				<div className="flex justify-center gap-4">
+				<div className="flex justify-center gap-3">
 					<button
 						onClick={onSkip}
-						className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+						className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
 					>
 						Skip This Word
 					</button>
 					<button
 						onClick={() => onAccept(currentCandidate)}
-						className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-lg"
+						className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-base"
 					>
 						Accept This Play
 					</button>

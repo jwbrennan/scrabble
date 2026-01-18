@@ -26,7 +26,8 @@ export interface FindViablePlaysResponse {
 
 export async function findViablePlays(
 	bingo: string,
-	turns: Turn[]
+	turns: Turn[],
+	abortSignal?: AbortSignal,
 ): Promise<FindViablePlaysResponse> {
 	// Strip down turns to only the fields needed by the API
 	const minimalTurns = turns.map((turn) => ({
@@ -43,14 +44,18 @@ export async function findViablePlays(
 	params.append('turns', JSON.stringify(minimalTurns));
 	// Send the current tile bag separately
 	if (turns.length > 0) {
-		params.append('currentTileBag', JSON.stringify(turns[turns.length - 1].tileBag));
+		params.append(
+			'currentTileBag',
+			JSON.stringify(turns[turns.length - 1].tileBag),
+		);
 	}
 
 	const response = await fetch(
 		`https://www.wolframcloud.com/obj/josephb/Scrabble/APIs/FindViablePlays?${params.toString()}`,
 		{
 			method: 'GET',
-		}
+			signal: abortSignal,
+		},
 	);
 
 	if (!response.ok) {

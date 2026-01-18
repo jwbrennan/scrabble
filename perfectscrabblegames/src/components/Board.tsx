@@ -32,7 +32,7 @@ export default function Board({
 
 	return (
 		<div
-			className="grid gap-1 p-4 bg-green-800 rounded overflow-visible"
+			className="grid gap-1 p-4 bg-green-800 rounded overflow-visible w-full h-full"
 			style={{ gridTemplateColumns: 'repeat(15, minmax(0, 1fr))' }}
 		>
 			{board.map((row, r) =>
@@ -42,7 +42,7 @@ export default function Board({
 							key={`${r}-${c}`}
 							onClick={() => onTileClick?.(r, c)}
 							className={clsx(
-								'w-10 h-10 flex items-center justify-center rounded-sm font-bold text-lg shadow-md relative transition-all cursor-pointer',
+								'w-8 h-8 flex items-center justify-center rounded-sm font-bold text-base shadow-md relative transition-all cursor-pointer',
 								letter
 									? 'bg-amber-100 text-black border-2 border-amber-600 shadow-inner'
 									: clsx(
@@ -56,12 +56,12 @@ export default function Board({
 						>
 							{letter}
 							{letter && (
-								<span className="absolute text-[8px] bottom-0.5 right-0.5 font-bold text-black opacity-90">
+								<span className="absolute text-[6px] bottom-0.5 right-0.5 font-bold text-black opacity-90">
 									{LETTER_POINTS[letter]}
 								</span>
 							)}
 							{!letter && r === 7 && c === 7 && (
-								<span className="absolute text-yellow-900 text-xl select-none">
+								<span className="absolute text-yellow-900 text-lg select-none">
 									★
 								</span>
 							)}

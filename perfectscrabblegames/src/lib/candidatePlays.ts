@@ -58,6 +58,7 @@ export async function findNextViablePlay(
 	words: string[],
 	startIndex: number,
 	turns: Turn[],
+	abortSignal?: AbortSignal,
 ): Promise<{ candidates: CandidatePlay[]; nextIndex: number } | null> {
 	console.log(
 		`Starting search with ${words.length} words, starting from index ${startIndex}`,
@@ -67,7 +68,7 @@ export async function findNextViablePlay(
 		const word = words[index];
 		console.log(`Trying word ${index}: ${word}`);
 		try {
-			const response = await findViablePlays(word, turns);
+			const response = await findViablePlays(word, turns, abortSignal);
 			console.log(`Response for ${word}:`, response);
 			if (
 				response.success === false &&
