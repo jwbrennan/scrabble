@@ -167,8 +167,8 @@ export default function SubsequentTurnSelector({
 	if (candidates.length === 0) {
 		if (turns.length >= 14) {
 			return (
-				<div className="text-center py-6">
-					<p className="text-xl text-gray-700 mb-4">
+				<div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center justify-center py-6">
+					<p className="text-xl text-gray-700 mb-4 text-center max-w-xs">
 						🎉 Game Complete! 🎉
 					</p>
 					<p className="text-base text-gray-500">

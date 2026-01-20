@@ -25,10 +25,13 @@ export function styleWithBlanks(
 	let blankIndex: number | null = null;
 	if (blanks) {
 		if (blanks.indices.length === 1) {
-			blankIndex = blanks.indices[0];
+			blankIndex = blanks.indices[0] + 1;
 		} else {
 			// Randomly choose one index to style as blank
-			blankIndex = blanks.indices[Math.floor(Math.random() * blanks.indices.length)];
+			blankIndex =
+				blanks.indices[
+					Math.floor(Math.random() * blanks.indices.length)
+				] + 1;
 		}
 	}
 
