@@ -2,7 +2,28 @@ BeginPackage["Scrabbology`PackageScope`", {"Scrabbology`"}]
 
 Begin["`APIFunctions`Private`"]
 
-UpdateTileBag[tileBag_Association, bingo_String, blanksRemaining_Integer]:=
+UpdateTileBag[tileBag_Association, bingo_String /; StringLength[bingo] == 8, blanksRemaining_Integer, overlap_Association] :=
+Module[
+	{
+		modifiedBingo, 
+		overlapTile = overlap["tile"],
+		overlapIndex = overlap["index"],
+		response, 
+		adjustedIndices
+	},
+	modifiedBingo = StringDrop[bingo, {overlapIndex}];
+	response = Association[UpdateTileBag[tileBag, modifiedBingo, blanksRemaining]];
+	If[
+		response["success"] && response["blanks"] =!= Null,
+		response = MapAt[Association, response, Key["blanks"]];
+		adjustedIndices = Map[If[# < overlapIndex, #, # + 1] &, response["blanks"]["indices"]];
+		response["blanks"]["indices"] = adjustedIndices;
+	];
+	Normal[MapAt[Normal, response, Key["blanks"]]]
+];
+
+
+UpdateTileBag[tileBag_Association, bingo_String /; StringLength[bingo] == 7, blanksRemaining_Integer] :=
 Module[
 	{
 		tilesInBingo = Characters[bingo], charCounts, newTileBag, blanksNeeded,
@@ -37,7 +58,7 @@ Module[
 		],
 		blanksNeeded =!= 0 && blanksNeeded <= blanksRemaining && Min[Values[newTileBag]] >= -blanksRemaining,
 		newTileBag["?"] = newTileBag["?"] - blanksNeeded;
-		blankTile = First[Flatten[KeyValueMap[Table[#1, -#2] &, Select[newTileBag, # < 0 &]]]];
+		blankTile = First[Flatten[KeyValueMap[Table[#1, -#2] &, Select[newTileBag, # < 0 &]]]]; (* Only one blank allowed for now! *)
 		blankIndices = Position[tilesInBingo, blankTile][[All, 1]];
 		Return[
 			{
@@ -210,7 +231,7 @@ Module[
 		Join[
 			#,
 			With[
-				{possibleBingo = #["bingo"], overlapTile = #["overlap", "tile"]},
+				{possibleBingo = #["bingo"], overlap = #["overlap"]},
 				{
 					response =
 					Enclose[
@@ -221,8 +242,9 @@ Module[
 								},
 								UpdateTileBag[
 									currentTileBag, 
-									StringJoin[DeleteElements[Characters[possibleBingo], 1 -> {overlapTile}]], 
-									blanksIntervene
+									possibleBingo, 
+									blanksIntervene,
+									overlap
 								]
 							],
 							{"success" -> True, "tileBag" -> _List, "blanks" -> _List | Null}
