@@ -38,7 +38,7 @@ const GameComplete: React.FC<GameCompleteProps> = ({ turns }) => {
 					};
 
 					const docRef = await addDoc(
-						collection(db, 'scrabbleGames'),
+						collection(db, 'perfect-scrabble-games'),
 						completedGame,
 					);
 					console.log('Game document written with ID: ', docRef.id);
