@@ -17,6 +17,30 @@ export interface Turn {
 		index: number;
 	} | null;
 }
+
+export interface FirestoreTurn {
+	id: number;
+	bingo: string;
+	row: number;
+	col: number;
+	direction: Direction;
+	blanks: {
+		tile: string;
+		indices: number[];
+	} | null;
+	score: number;
+	overlap: {
+		tile: string;
+		index: number;
+	} | null;
+}
+
+export interface ScrabbleGameData {
+	gameId?: string; // Firestore will generate this if using addDoc, or you can provide with setDoc
+	turns: FirestoreTurn[];
+	timestamp: Date;
+}
+
 export const placeWord = (board: string[][], turn: Turn): string[][] => {
 	const newBoard = board.map((row) => [...row]);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -9,6 +9,7 @@ import {
 	type CandidatePlay,
 } from '../lib/candidatePlays';
 import CandidatePlayDisplay from './CandidatePlayDisplay';
+import GameComplete from './GameComplete';
 interface Props {
 	eightLetterWords: string[];
 	turns: Turn[];
@@ -166,16 +167,7 @@ export default function SubsequentTurnSelector({
 	// Loading state: searching through words
 	if (candidates.length === 0) {
 		if (turns.length >= 14) {
-			return (
-				<div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center justify-center py-6">
-					<p className="text-xl text-gray-700 mb-4 text-center max-w-xs">
-						🎉 Game Complete! 🎉
-					</p>
-					<p className="text-base text-gray-500">
-						You've successfully played 14 perfect Scrabble turns!
-					</p>
-				</div>
-			);
+			return <GameComplete turns={turns} />;
 		}
 		if (isSearching) {
 			return (
