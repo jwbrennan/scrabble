@@ -60,28 +60,22 @@ export async function findNextViablePlay(
 	turns: Turn[],
 	abortSignal?: AbortSignal,
 ): Promise<{ candidates: CandidatePlay[]; nextIndex: number } | null> {
-	console.log(
-		`Starting search with ${words.length} words, starting from index ${startIndex}`,
-	);
+	// console.log(`Starting search with ${words.length} words, starting from index ${startIndex}`,);
 	let index = startIndex;
 	while (index < words.length) {
 		const word = words[index];
-		console.log(`Trying word ${index}: ${word}`);
+		// console.log(`Trying word ${index}: ${word}`);
 		try {
 			const response = await findViablePlays(word, turns, abortSignal);
-			console.log(`Response for ${word}:`, response);
+			// console.log(`Response for ${word}:`, response);
 			if (
 				response.success === false &&
 				response.error === 'NO-VIABLE-PLAYS'
 			) {
-				console.log(`No viable plays for ${word}, continuing`);
 				index++;
 				continue;
 			}
 			if (response.viablePlays && response.viablePlays.length > 0) {
-				console.log(
-					`Found ${response.viablePlays.length} viable plays for ${word}`,
-				);
 				const candidates: CandidatePlay[] = response.viablePlays.map(
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(p: any) => ({
@@ -99,9 +93,6 @@ export async function findNextViablePlay(
 				);
 				return { candidates, nextIndex: index + 1 };
 			}
-			console.log(
-				`No viable plays found for ${word}, but response was successful`,
-			);
 		} catch (err) {
 			console.error('Error finding viable plays for', word, ':', err);
 		}
@@ -173,14 +164,7 @@ export async function acceptCandidate(
 		);
 		// Shuffle the culled list to randomize the order
 		culledWords = [...culledWords].sort(() => Math.random() - 0.5);
-
-		console.log('Remaining tiles:', getTilesString(candidate.tileBag));
-		console.log(
-			`Culled and shuffled words: ${wordsToCull.length} -> ${culledWords.length} for turn ${newTurnsCount}`,
-		);
-		console.log(
-			`Culled from ${wordsToCull === words ? 'current' : 'original'} list`,
-		);
+		// console.log(`Bingo list: ${wordsToCull.length} -> ${culledWords.length} for turn ${newTurnsCount}`);
 		if (newTurnsCount >= 12) {
 			console.log('Culled list (using blanks):', culledWords);
 		}

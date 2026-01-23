@@ -267,18 +267,18 @@ export default function App() {
 							{showHowItWorks && (
 								<div className="absolute bottom-full mb-2 left-0 w-80 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
 									<p className="text-sm text-gray-700">
-										A Perfect Game is one in which every
-										turn is a bingo! Assuming perfect word
-										knowledge and very lucky tiles, two
-										players can, in principle, have seven
-										bingos each! Start with a random
-										seven-letter opening bingo, then take
-										turns with eight-letter words that
-										overlap with exactly one existing tile.
-										This program is calling a Wolfram
-										Language API to find viable overlaps and
-										calculate scores. Exactly one blank is
-										allowed on turn 13 and 14. Have fun!
+										A Perfect Scrabble Game is one in which
+										every turn is a bingo! Assuming perfect
+										word knowledge and very lucky tiles, two
+										players can have seven bingos each!
+										Start with a random seven-letter opening
+										bingo, then take turns with eight-letter
+										words that overlap with exactly one
+										existing tile. One blank is allowed on
+										turn 13 and 14 only. The game uses a
+										Wolfram Language back-end API to find
+										viable plays and calculate scores. Have
+										fun!
 									</p>
 								</div>
 							)}

@@ -41,12 +41,7 @@ export default function SubsequentTurnSelector({
 		useState<AbortController | null>(null);
 
 	const findNextViablePlay = async () => {
-		console.log(
-			'findNextViablePlay called, words.length:',
-			words.length,
-			'currentWordIndex:',
-			currentWordIndex,
-		);
+		// console.log('findNextViablePlay called, words.length:',	words.length, 'currentWordIndex:', currentWordIndex,);
 		setIsSearching(true);
 		const controller = new AbortController();
 		setAbortController(controller);
@@ -127,7 +122,6 @@ export default function SubsequentTurnSelector({
 		}
 		setBoard(result.board);
 		setTurns(result.turns);
-		console.log(JSON.stringify(result.turns));
 		setWords(result.words);
 		// Reset for next search
 		setCandidates([]);
@@ -167,6 +161,7 @@ export default function SubsequentTurnSelector({
 	// Loading state: searching through words
 	if (candidates.length === 0) {
 		if (turns.length >= 14) {
+			console.log(JSON.stringify(turns));
 			return <GameComplete turns={turns} />;
 		}
 		if (isSearching) {
