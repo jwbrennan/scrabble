@@ -1,4 +1,16 @@
 export type Direction = 'H' | 'V';
+
+export interface Placement {
+	bingo: string;
+	row: number;
+	col: number;
+	direction: Direction;
+	blanks: {
+		tile: string;
+		indices: number[];
+	} | null;
+}
+
 export interface Turn {
 	id: number;
 	bingo: string;
@@ -41,17 +53,18 @@ export interface ScrabbleGameData {
 	timestamp: Date;
 }
 
-export const placeWord = (board: string[][], turn: Turn): string[][] => {
+export const placeWord = (board: string[][], placement: Placement): string[][] => {
 	const newBoard = board.map((row) => [...row]);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { bingo, row, col, direction } = turn;
+	const { bingo, row, col, direction, blanks } = placement;
 
+	let r = row;
+	let c = col;
 	for (let i = 0; i < bingo.length; i++) {
-		if (direction === 'H') {
-			newBoard[row][col + i] = bingo[i];
-		} else {
-			newBoard[row + i][col] = bingo[i];
-		}
+		const letter = bingo[i];
+		const isBlank = blanks && blanks.indices.includes(i + 1);
+		newBoard[r][c] = isBlank ? '?' : letter;
+		if (direction === 'H') c++;
+		else r++;
 	}
 	return newBoard;
 };

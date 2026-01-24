@@ -76,16 +76,11 @@ export default function OpeningBingoSelector({
 			.fill(null)
 			.map(() => Array(15).fill(''));
 		const newBoard = placeWord(emptyBoard, {
-			id: 0,
 			bingo: openingBingo,
 			row: startRow,
 			col: startCol,
 			direction: direction as 'H' | 'V',
 			blanks: null,
-			score: 0,
-			tileBag: {},
-			tilesLeft: 0,
-			overlap: null,
 		});
 
 		onPlace(
