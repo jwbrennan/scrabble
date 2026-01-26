@@ -57,11 +57,17 @@ export const placeWord = (board: string[][], placement: Placement): string[][] =
 	const newBoard = board.map((row) => [...row]);
 	const { bingo, row, col, direction, blanks } = placement;
 
+	// Determine which index to style as blank
+	let blankIndex: number | null = null;
+	if (blanks && blanks.indices.length > 0) {
+		blankIndex = blanks.indices[Math.floor(Math.random() * blanks.indices.length)];
+	}
+
 	let r = row;
 	let c = col;
 	for (let i = 0; i < bingo.length; i++) {
 		const letter = bingo[i];
-		const isBlank = blanks && blanks.indices.includes(i + 1);
+		const isBlank = blankIndex === i + 1;
 		newBoard[r][c] = isBlank ? '?' : letter;
 		if (direction === 'H') c++;
 		else r++;
