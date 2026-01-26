@@ -95,13 +95,14 @@ const CollectionViewer: React.FC = () => {
 						{games.map((game) => {
 							const scores = calculatePlayerScores(game.turns);
 							const finalBoard = game.turns.reduce(
-								(board, turn) => placeWord(board, {
-									row: turn.row,
-									col: turn.col,
-									direction: turn.direction,
-									bingo: turn.bingo,
-									blanks: turn.blanks
-								}),
+								(board, turn) =>
+									placeWord(board, {
+										row: turn.row,
+										col: turn.col,
+										direction: turn.direction,
+										bingo: turn.bingo,
+										blanks: turn.blanks,
+									}),
 								Array(BOARD_SIZE)
 									.fill(null)
 									.map(() => Array(BOARD_SIZE).fill('')),
@@ -146,6 +147,83 @@ const CollectionViewer: React.FC = () => {
 													selectedCol={null}
 												/>
 											</div>
+										</div>
+									</details>
+									<details className="mt-4">
+										<summary className="cursor-pointer text-blue-600">
+											View Turns
+										</summary>
+										<div className="mt-2">
+											<table className="table-auto w-full border-collapse border border-gray-300">
+												<thead>
+													<tr className="bg-gray-100">
+														<th className="border border-gray-300 px-4 py-2">
+															ID
+														</th>
+														<th className="border border-gray-300 px-4 py-2">
+															Bingo
+														</th>
+														<th className="border border-gray-300 px-4 py-2">
+															Direction
+														</th>
+														<th className="border border-gray-300 px-4 py-2">
+															Row
+														</th>
+														<th className="border border-gray-300 px-4 py-2">
+															Column
+														</th>
+														<th className="border border-gray-300 px-4 py-2">
+															Overlap
+														</th>
+														<th className="border border-gray-300 px-4 py-2">
+															Score
+														</th>
+														<th className="border border-gray-300 px-4 py-2">
+															Blanks
+														</th>
+													</tr>
+												</thead>
+												<tbody>
+													{game.turns.map((turn) => (
+														<tr
+															key={turn.id}
+															className="text-center"
+														>
+															<td className="border border-gray-300 px-4 py-2">
+																{turn.id}
+															</td>
+															<td className="border border-gray-300 px-4 py-2">
+																{turn.bingo}
+															</td>
+															<td className="border border-gray-300 px-4 py-2">
+																{turn.direction}
+															</td>
+															<td className="border border-gray-300 px-4 py-2">
+																{turn.row + 1}
+															</td>
+															<td className="border border-gray-300 px-4 py-2">
+																{String.fromCharCode(
+																	65 +
+																		turn.col,
+																)}
+															</td>
+															<td className="border border-gray-300 px-4 py-2">
+																{turn.overlap ?
+																	`${turn.overlap.tile} (${turn.overlap.index})`
+																:	'None'}
+															</td>
+															<td className="border border-gray-300 px-4 py-2">
+																{turn.score}
+															</td>
+															<td className="border border-gray-300 px-4 py-2">
+																{turn.blanks ?
+																	`${turn.blanks.tile} (${turn.blanks.indices.join(', ')})`
+																:	'-'}
+															</td>
+														</tr>
+													))}
+												</tbody>
+											</table>
 										</div>
 									</details>
 								</div>
