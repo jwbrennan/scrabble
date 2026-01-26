@@ -127,30 +127,28 @@ FindBingoSpots[bingo_String, turn_Association /; turn["direction"] == "H"] :=
 Module[
 	{
 	word = turn["bingo"], row = turn["row"], col = turn["col"], 
-	id = turn["id"], overlaps, startingPosList
+	id = turn["id"], overlaps
 	},
 	overlaps = Intersection[Characters[word], Characters[bingo]];
 	Flatten[
 		Map[
 			With[
 				{
-					toTile = StringPosition[word, #][[All, 1]] - 1,
-					retrace = StringPosition[bingo, #][[All, 1]] - 1
+					toTile = StringPosition[word, #][[All, 1]], 
+					retrace = StringPosition[bingo, #][[All, 1]] (* Gives the 1-based indices of the overlap tile '#' in the bingo string. *)
 				},
-				startingPosList =
 				Flatten[
-					Outer[List, (row - retrace), (col + toTile)],
-					1
-				];
-				Table[
-					<|
-						"bingo" -> bingo, "row" -> pos[[1]], "col" -> pos[[2]], "direction" -> "V", "playThroughTurn" -> id, 
-						"overlap" -> 
+					Table[
 						<|
-							"tile" -> #, "index" -> First[retrace] + 1
-						|>
-					|>,
-					{pos, startingPosList}
+							"bingo" -> bingo, "row" -> row - r, "col" -> col + t, "direction" -> "V", "playThroughTurn" -> id, 
+							"overlap" -> 
+							<|
+								"tile" -> #, "index" -> r
+							|>
+						|>,
+						{r, retrace}, {t, toTile}
+					],
+					1
 				]
 			] &,
 			overlaps
@@ -162,30 +160,28 @@ FindBingoSpots[bingo_String, turn_Association /; turn["direction"] == "V"] :=
 Module[
 	{
 		word = turn["bingo"], row = turn["row"], col = turn["col"], 
-		id = turn["id"], overlaps, startingPosList
+		id = turn["id"], overlaps
 	},
 	overlaps = Intersection[Characters[word], Characters[bingo]];
 	Flatten[
 		Map[
 			With[
 				{
-					toTile = StringPosition[word, #][[All, 1]] - 1,
-					retrace = StringPosition[bingo, #][[All, 1]] - 1
+					toTile = StringPosition[word, #][[All, 1]],
+					retrace = StringPosition[bingo, #][[All, 1]]
 				},
-				startingPosList =
 				Flatten[
-					Outer[List, (row + toTile), (col - retrace)],
-					1
-				];
-				Table[
-					<|
-						"bingo" -> bingo, "row" -> pos[[1]], "col" -> pos[[2]], "direction" -> "H", "playThroughTurn" -> id, 
-						"overlap" -> 
+					Table[
 						<|
-							"tile" -> #, "index" -> First[retrace] + 1
-						|>
-					|>,
-					{pos, startingPosList}
+							"bingo" -> bingo, "row" -> row + t, "col" -> col - r, "direction" -> "H", "playThroughTurn" -> id, 
+							"overlap" -> 
+							<|
+								"tile" -> #, "index" -> r
+							|>
+						|>,
+						{r, retrace}, {t, toTile}
+					],
+					1
 				]
 			] &,
 			overlaps
